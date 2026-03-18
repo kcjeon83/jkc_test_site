@@ -10,3 +10,4 @@ export const GALLERY_ITEMS = [
   { id: 7, src: 'https://images.unsplash.com/photo-1569091791842-7cfb64e04797?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxjb250ZW1wb3JhcnklMjBhcnR8ZW58MXx8fHwxNzczNzU2NjI1fDA&ixlib=rb-4.1.0&q=80&w=1080', title: 'Abstract Tone', subtitle: 'Contemporary Art' },
   { id: 8, src: 'https://images.unsplash.com/photo-1604147706283-d7119b5b822c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHx0ZXh0dXJlZCUyMGJhY2tncm91bmR8ZW58MXx8fHwxNzczODEwMTcyfDA&ixlib=rb-4.1.0&q=80&w=1080', title: 'Surface', subtitle: 'Tactile Studies' }
 ];
+//test
