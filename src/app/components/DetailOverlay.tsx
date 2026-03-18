@@ -49,7 +49,7 @@ export function DetailOverlay({ item, onClose }: DetailOverlayProps) {
               <div className="w-12 h-[1px] bg-[#d4af37] mb-8" />
               
               <p className="text-sm md:text-base leading-relaxed text-[#555] font-sans font-light max-w-sm mb-10">
-                에디토리얼 감각이 돋보이는 프로젝트 상세 페이지입니다. 유려한 곡선과 마스킹 기법을 통해 심리스한 사용자 경험을 제공하며, 고유의 타이포그래피 시스템을 활용해 공간감을 극대화했습니다.
+                사반세기를 가로 질러 온 위대한 숨결,그 찬란한 성좌 아래 용사님들이 빚어낸 25년의 경이로운 유산! 긴 세월, 꺾이지 않는 기개로 전설의 길을 갈고 닦아 온 용사님들을 예우하며, 그 어느 때보다 찬란한 25주년 기념 어워즈를 개최합니다.
               </p>
               
               <button className="flex items-center gap-4 text-xs tracking-widest uppercase font-semibold text-[#1a1a1a] hover:text-[#d4af37] transition-colors group">
