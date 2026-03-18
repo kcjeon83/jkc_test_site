@@ -42,7 +42,7 @@ export function DetailOverlay({ item, onClose }: DetailOverlayProps) {
               <h2 className="text-[#a0a0a0] font-sans text-xs tracking-[0.2em] uppercase mb-4 font-bold">
                 Project No. {String(item.id).padStart(2, '0')}
               </h2>
-              <h1 className="font-serif text-[10vw] md:text-[5vw] italic text-[#1a1a1a] mb-6 leading-[1.1] font-medium">
+              <h1 className="font-serif text-[10vw] md:text-[5vw] italic text-[#1a1a1a] mb-6 leading-[1.1] font-medium whitespace-[break-spaces]">
                 {item.title}
               </h1>
               
