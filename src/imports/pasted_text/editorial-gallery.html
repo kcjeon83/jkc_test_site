@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Editorial 3D Gallery</title>
+    
+    <!-- Google Fonts: 에디토리얼 디자인을 위한 폰트 조합 -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;1,400&family=Inter:wght@300;400;800&display=swap" rel="stylesheet">
+
+    <style>
+        /* =========================================
+           CSS Reset & Base Variables
+           ========================================= */
+        :root {
+            --bg-color: #0a0a0a;
+            --text-main: #f0f0f0;
+            --text-muted: #666666;
+            --accent: #d4af37; /* Gold accent */
+            --font-sans: 'Inter', sans-serif;
+            --font-serif: 'Cormorant Garamond', serif;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            font-family: var(--font-sans);
+            overflow: hidden; /* 스크롤바 숨김, JS로 컨트롤 */
+            width: 100vw;
+            height: 100vh;
+            user-select: none;
+            -webkit-font-smoothing: antialiased;
+        }
+
+        /* =========================================
+           Custom Cursor
+           ========================================= */
+        #cursor {
+            position: fixed;
+            top: 0; left: 0;
+            width: 12px; height: 12px;
+            background: var(--text-main);
+            border-radius: 50%;
+            transform: translate(-50%, -50%);
+            pointer-events: none;
+            z-index: 9999;
+            mix-blend-mode: difference;
+            transition: width 0.3s ease, height 0.3s ease, background 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 10px;
+            font-weight: 800;
+            color: var(--bg-color);
+            opacity: 0; /* 초기 숨김 (마우스 움직일때 나타남) */
+        }
+        #cursor.hover-state {
+            width: 60px; height: 60px;
+            background: var(--text-main);
+            mix-blend-mode: normal;
+        }
+        #cursor::after {
+            content: attr(data-text);
+        }
+
+        /* =========================================
+           Background Typography (Editorial Element)
+           ========================================= */
+        .bg-typography {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 100%;
+            text-align: center;
+            font-size: 18vw;
+            font-weight: 800;
+            color: rgba(255, 255, 255, 0.03);
+            white-space: nowrap;
+            z-index: 0;
+            pointer-events: none;
+            letter-spacing: -0.05em;
+        }
+
+        /* =========================================
+           Logo
+           ========================================= */
+        .logo {
+            position: fixed;
+            top: 40px;
+            left: 40px;
+            font-family: var(--font-serif);
+            font-size: 28px;
+            font-weight: 600;
+            font-style: italic;
+            color: var(--text-main);
+            z-index: 50;
+            pointer-events: none; /* 클릭 방해 방지 */
+            letter-spacing: 1px;
+        }
+
+        /* =========================================
+           3D Carousel Scene
+           ========================================= */
+        .scene {
+            position: relative;
+            width: 100vw;
+            height: 100vh;
+            perspective: 1000px; /* 3D 공간감 깊이 설정 */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 10;
+        }
+
+        .carousel {
+            position: relative;
+            width: 25vw;  /* 이미지 가로 크기 */
+            height: 35vw; /* 이미지 세로 크기 */
+            max-width: 300px;
+            max-height: 420px;
+            transform-style: preserve-3d; /* 자식 요소 3D 유지 */
+            /* JS에서 transform: translateZ(...) rotateY(...) 로 컨트롤됨 */
+        }
+
+        .carousel-item {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            /* JS에서 각도와 거리 계산하여 배치됨 */
+            cursor: pointer;
+            -webkit-backface-visibility: hidden;
+            backface-visibility: hidden;
+        }
+
+        /* 이너 래퍼: 여기서 탄성(Skew) 효과를 줌 */
+        .carousel-item-inner {
+            width: 100%; height: 100%;
+            background-size: cover;
+            background-position: center;
+            filter: grayscale(100%) contrast(1.1);
+            transition: filter 0.5s ease;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+        }
+
+        .carousel-item:hover .carousel-item-inner {
+            filter: grayscale(0%) contrast(1);
+        }
+
+        /* 중앙 가이드 라인 (디테일) */
+        .center-guide {
+            position: absolute;
+            top: 10%;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 10px;
+            z-index: 5;
+            opacity: 0.5;
+        }
+        .center-guide span { font-size: 10px; letter-spacing: 2px; }
+        .center-guide .line { width: 1px; height: 30px; background: var(--text-main); }
+
+        /* =========================================
+           Detail View (Seamless Transition)
+           ========================================= */
+        .detail-view {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
+            background: var(--bg-color);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            pointer-events: none;
+            /* 클립 패스로 극적인 등장 연출 (커튼 효과) */
+            clip-path: inset(50% 50% 50% 50%);
+            transition: clip-path 1s cubic-bezier(0.77, 0, 0.175, 1);
+        }
+
+        .detail-view.active {
+            pointer-events: auto;
+            clip-path: inset(0% 0% 0% 0%);
+        }
+
+        .detail-image {
+            position: absolute;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background-size: cover;
+            background-position: center;
+            opacity: 0.4;
+            transform: scale(1.1);
+            transition: transform 1.5s cubic-bezier(0.165, 0.84, 0.44, 1);
+        }
+        
+        .detail-view.active .detail-image {
+            transform: scale(1);
+        }
+
+        .detail-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease 0.5s, transform 0.8s ease 0.5s;
+        }
+
+        .detail-view.active .detail-content {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        .detail-title {
+            font-family: var(--font-serif);
+            font-size: 6vw;
+            font-style: italic;
+            color: var(--accent);
+            margin-bottom: 20px;
+        }
+
+        .detail-desc {
+            max-width: 400px;
+            margin: 0 auto;
+            font-size: 14px;
+            line-height: 1.6;
+            color: var(--text-main);
+        }
+
+        .btn-close {
+            position: absolute;
+            top: 40px; right: 40px;
+            font-size: 12px;
+            letter-spacing: 2px;
+            cursor: pointer;
+            z-index: 101;
+            padding: 10px;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease 0.8s;
+        }
+
+        .detail-view.active ~ .btn-close {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        /* 모바일 대응 */
+        @media (max-width: 768px) {
+            .logo { top: 24px; left: 24px; font-size: 22px; }
+            .carousel { width: 45vw; height: 65vw; }
+            .bg-typography { font-size: 25vw; }
+            .detail-title { font-size: 12vw; }
+            #cursor { display: none; } /* 모바일에서는 커스텀 커서 숨김 */
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Custom Cursor -->
+    <div id="cursor" data-text=""></div>
+
+    <!-- Logo -->
+    <div class="logo">Portfolio</div>
+
+    <!-- Background Editorial Text -->
+    <div class="bg-typography">EXHIBITION</div>
+
+    <!-- UI Elements -->
+    <div class="center-guide">
+        <span>DRAG OR SCROLL</span>
+        <div class="line"></div>
+    </div>
+
+    <!-- 3D Carousel Scene -->
+    <div class="scene">
+        <div class="carousel" id="carousel">
+            <!-- Items will be injected by JS -->
+        </div>
+    </div>
+
+    <!-- Detail View (Seamless Transition overlay) -->
+    <div class="detail-view" id="detailView">
+        <div class="detail-image" id="detailImage"></div>
+        <div class="detail-content">
+            <h1 class="detail-title" id="detailTitle">Project Title</h1>
+            <p class="detail-desc" id="detailDesc">에디토리얼 감각이 돋보이는 프로젝트 상세 페이지입니다. 유려한 곡선과 마스킹 기법을 통해 심리스한 사용자 경험을 제공합니다.</p>
+        </div>
+    </div>
+    <div class="btn-close" id="btnClose">CLOSE ✕</div>
+
+    <script>
+        // ==========================================
+        // Data & Setup
+        // ==========================================
+        const images = [
+            'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=800&q=80',
+            'https://images.unsplash.com/photo-1509631179647-0177331693ae?auto=format&fit=crop&w=800&q=80',
+            'https://images.unsplash.com/photo-1515886657613-9f3515b0c78f?auto=format&fit=crop&w=800&q=80',
+            'https://images.unsplash.com/photo-1483985988355-763728e1935b?auto=format&fit=crop&w=800&q=80',
+            'https://images.unsplash.com/photo-1513094735237-8f2714d57c13?auto=format&fit=crop&w=800&q=80',
+            'https://images.unsplash.com/photo-1493655161922-ef9892f5a820?auto=format&fit=crop&w=800&q=80',
+            'https://images.unsplash.com/photo-1524041255072-7da0525d6b34?auto=format&fit=crop&w=800&q=80',
+            'https://images.unsplash.com/photo-1485230405346-71acb9518d9c?auto=format&fit=crop&w=800&q=80',
+            'https://images.unsplash.com/photo-1550614000-4b95dd244e87?auto=format&fit=crop&w=800&q=80',
+            'https://images.unsplash.com/photo-1500917293891-ef795e70e1f6?auto=format&fit=crop&w=800&q=80'
+        ];
+
+        const titles = [
+            "L'Élégance", "Urban Mute", "Sculptural", "Avant-Garde", "Noir et Blanc",
+            "Silhouette", "Minimalism", "Texture", "Obscure", "Lumière"
+        ];
+
+        const carousel = document.getElementById('carousel');
+        let itemElements = [];
+        let innerElements = [];
+
+        // 3D 실린더 배치를 위한 변수
+        const numItems = images.length;
+        const theta = 360 / numItems; // 아이템 간의 각도 간격
+        let radius = 0; // JS에서 동적으로 계산
+
+        // ==========================================
+        // Initialize Carousel
+        // ==========================================
+        function initCarousel() {
+            carousel.innerHTML = '';
+            itemElements = [];
+            innerElements = [];
+
+            // 컨테이너 너비를 기준으로 반지름 계산 (수학: r = (w/2) / tan(pi/n))
+            const itemWidth = carousel.offsetWidth;
+            radius = Math.round((itemWidth / 2) / Math.tan(Math.PI / numItems)) + 40; // 여백 40px 추가
+
+            images.forEach((imgSrc, i) => {
+                const item = document.createElement('div');
+                item.className = 'carousel-item';
+                
+                // 3D 공간에 원형으로 배치
+                item.style.transform = `rotateY(${i * theta}deg) translateZ(${radius}px)`;
+
+                const inner = document.createElement('div');
+                inner.className = 'carousel-item-inner';
+                inner.style.backgroundImage = `url(${imgSrc})`;
+
+                // 클릭 이벤트 (상세 페이지 전환)
+                item.addEventListener('click', () => openDetail(imgSrc, titles[i]));
+
+                item.appendChild(inner);
+                carousel.appendChild(item);
+                
+                itemElements.push(item);
+                innerElements.push(inner);
+            });
+        }
+
+        // ==========================================
+        // Interaction & Kinematics (관성 스크롤)
+        // ==========================================
+        let targetRotation = 0;
+        let currentRotation = 0;
+        let isDragging = false;
+        let startX = 0;
+        let currentX = 0;
+        
+        // 마우스 / 터치 이벤트 설정
+        function handleDragStart(e) {
+            if(detailActive) return;
+            isDragging = true;
+            startX = e.type.includes('mouse') ? e.pageX : e.touches[0].pageX;
+            document.body.style.cursor = 'grabbing';
+            cursor.dataset.text = 'DRAG';
+        }
+
+        function handleDragMove(e) {
+            if (!isDragging || detailActive) return;
+            const x = e.type.includes('mouse') ? e.pageX : e.touches[0].pageX;
+            const delta = (x - startX) * 0.3; // 드래그 민감도
+            targetRotation += delta;
+            startX = x;
+        }
+
+        function handleDragEnd() {
+            isDragging = false;
+            document.body.style.cursor = 'default';
+            cursor.dataset.text = 'VIEW';
+        }
+
+        function handleWheel(e) {
+            if(detailActive) return;
+            // 휠 방향에 따라 타겟 회전값 증가/감소
+            targetRotation += e.deltaY * -0.05;
+        }
+
+        // 이벤트 리스너 등록
+        window.addEventListener('mousedown', handleDragStart);
+        window.addEventListener('mousemove', handleDragMove);
+        window.addEventListener('mouseup', handleDragEnd);
+        window.addEventListener('mouseleave', handleDragEnd);
+        
+        window.addEventListener('touchstart', handleDragStart);
+        window.addEventListener('touchmove', handleDragMove);
+        window.addEventListener('touchend', handleDragEnd);
+        
+        window.addEventListener('wheel', handleWheel);
+
+        window.addEventListener('resize', () => {
+            initCarousel(); // 리사이즈 시 반지름 재계산
+        });
+
+        // ==========================================
+        // Render Loop (Lerp & Skew Effect)
+        // ==========================================
+        function render() {
+            // Lerp (선형 보간) - 부드러운 관성 구현
+            const ease = 0.08;
+            currentRotation += (targetRotation - currentRotation) * ease;
+
+            // 속도 계산 (현재값과 타겟값의 차이)
+            const velocity = targetRotation - currentRotation;
+
+            // 속도에 기반한 왜곡(Skew) 계산 - 아리스티드 브누아 스타일의 핵심
+            // 속도가 빠를수록 이미지가 옆으로 눕는 젤리 같은 텐션 부여
+            let skewValue = velocity * 0.2; 
+            // 너무 과하게 꺾이지 않도록 Clamp
+            skewValue = Math.max(Math.min(skewValue, 15), -15);
+
+            // 전체 캐러셀 회전 적용 (카메라를 뒤로 빼고(translateZ) 회전(rotateY))
+            carousel.style.transform = `translateZ(${-radius}px) rotateY(${currentRotation}deg)`;
+
+            // 각 아이템 이너에 Skew 적용
+            innerElements.forEach(inner => {
+                inner.style.transform = `skewX(${skewValue}deg)`;
+            });
+
+            requestAnimationFrame(render);
+        }
+
+        // ==========================================
+        // Custom Cursor Logic
+        // ==========================================
+        const cursor = document.getElementById('cursor');
+        
+        window.addEventListener('mousemove', (e) => {
+            cursor.style.opacity = 1;
+            cursor.style.left = `${e.clientX}px`;
+            cursor.style.top = `${e.clientY}px`;
+        });
+
+        // 호버 영역에 따른 커서 모양 변경
+        carousel.addEventListener('mouseenter', () => {
+            cursor.classList.add('hover-state');
+            cursor.dataset.text = 'VIEW';
+        });
+        carousel.addEventListener('mouseleave', () => {
+            cursor.classList.remove('hover-state');
+            cursor.dataset.text = '';
+        });
+
+        // ==========================================
+        // Detail View Transitions (Seamless Masking)
+        // ==========================================
+        const detailView = document.getElementById('detailView');
+        const detailImage = document.getElementById('detailImage');
+        const detailTitle = document.getElementById('detailTitle');
+        const btnClose = document.getElementById('btnClose');
+        let detailActive = false;
+
+        function openDetail(imgSrc, titleText) {
+            detailActive = true;
+            detailImage.style.backgroundImage = `url(${imgSrc})`;
+            detailTitle.innerText = titleText;
+            
+            // 커스텀 커서 숨김
+            cursor.style.opacity = 0;
+            
+            // CSS 클래스 토글을 통한 clip-path 애니메이션 트리거
+            detailView.classList.add('active');
+        }
+
+        btnClose.addEventListener('click', () => {
+            detailActive = false;
+            detailView.classList.remove('active');
+            cursor.style.opacity = 1;
+        });
+
+        // ==========================================
+        // Start App
+        // ==========================================
+        initCarousel();
+        render();
+
+    </script>
+</body>
+</html>
