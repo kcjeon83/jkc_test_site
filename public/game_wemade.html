@@ -1,0 +1,774 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>VAULT — Game Archive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,800;1,400;1,800&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<style>
+/* ─── RESET & BASE ─── */
+:root {
+  --bg:   #0c0b09;
+  --ink:  #f0ebe0;
+  --ink2: rgba(240,235,224,.38);
+  --ink3: rgba(240,235,224,.1);
+  --gold: #c9a96e;
+  --serif:'EB Garamond', serif;
+  --sans: 'Syne', sans-serif;
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html, body {
+  width:100%; height:100%;
+  background:var(--bg); color:var(--ink);
+  font-family:var(--sans);
+  overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+  cursor:none;
+}
+
+/* ─── GRAIN ─── */
+body::after {
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:9990;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='250' height='250' filter='url(%23n)' opacity='.055'/%3E%3C/svg%3E");
+  opacity:.55;
+}
+
+/* ─── CURSOR ─── */
+#cur-dot {
+  position:fixed; z-index:9999; pointer-events:none;
+  width:7px; height:7px; border-radius:50%;
+  background:var(--ink);
+  transform:translate(-50%,-50%);
+  transition:opacity .2s;
+}
+
+
+/* ─── HEADER ─── */
+#hd {
+  position:fixed; top:0; left:0; right:0; z-index:200;
+  display:flex; align-items:flex-end; justify-content:space-between;
+  padding:30px 48px 20px;
+  border-bottom:1px solid var(--ink3);
+}
+.logo {
+  font-family:var(--serif); font-size:22px; font-weight:800;
+  letter-spacing:.1em;
+}
+.logo-tag {
+  font-family:var(--sans); font-size:9px; font-weight:400;
+  letter-spacing:.26em; color:var(--ink2); text-transform:uppercase;
+  margin-left:14px;
+}
+.hnav {
+  display:flex; gap:36px;
+}
+.hl {
+  font-family:var(--sans); font-size:9px; font-weight:400;
+  letter-spacing:.22em; text-transform:uppercase; color:var(--ink2);
+  position:relative;
+}
+.hl::after {
+  content:''; position:absolute; left:0; bottom:-2px;
+  width:0; height:1px; background:var(--ink);
+  transition:width .4s cubic-bezier(.77,0,.18,1);
+}
+.hl:hover { color:var(--ink); }
+.hl:hover::after { width:100%; }
+
+/* ─── BG WORD ─── */
+#bgw {
+  position:fixed; bottom:-4vw; left:-1vw; z-index:0;
+  font-family:var(--serif); font-style:italic; font-weight:800;
+  font-size:26vw; color:rgba(240,235,224,.025);
+  line-height:1; letter-spacing:-.02em; pointer-events:none;
+  white-space:nowrap;
+}
+
+/* ─── HORIZONTAL TRACK ─── */
+#track-wrap {
+  position:fixed; inset:0; z-index:10;
+  display:flex; align-items:center;
+  overflow:hidden;
+  padding-top:78px;
+  padding-bottom:70px;
+  perspective:1400px;
+  perspective-origin:50% 50%;
+}
+#track {
+  display:flex; align-items:center;
+  gap:14px;
+  padding:0 48px;
+  will-change:transform;
+  transform-style:preserve-3d;
+}
+
+/* ─── ITEM ─── */
+.gi {
+  flex:0 0 auto;
+  position:relative;
+  overflow:hidden;
+  cursor:none;
+  transform-origin:center center;
+  will-change:transform;
+  transform-style:preserve-3d;
+  backface-visibility:hidden;
+}
+.gi-inner {
+  width:100%; height:100%;
+  position:relative; overflow:hidden;
+}
+.gi svg {
+  width:100%; height:100%;
+  display:block;
+  transition:filter .15s linear;
+  filter:saturate(.65) brightness(.82);
+}
+/* hover: brighten */
+.gi.lit svg { filter:saturate(2.2) brightness(1.9); }
+/* wave-active: brighten proportional to wave (set via JS style) */
+/* dragging suppresses hover lit */
+body.dragging .gi.lit svg { filter:saturate(.65) brightness(.82); }
+
+/* text overlay — hidden */
+.gi-info { display:none; }
+/* index number — top RIGHT, always visible */
+.gi-num {
+  position:absolute; top:10px; right:10px; z-index:5;
+  font-family:var(--mono); font-size:9px; font-weight:400;
+  letter-spacing:.12em; color:rgba(240,235,224,.45);
+  pointer-events:none;
+}
+
+/* ─── FOOTER HUD ─── */
+#ft {
+  position:fixed; bottom:0; left:0; right:0; z-index:200;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:16px 48px;
+  border-top:1px solid var(--ink3);
+}
+.ft-hint {
+  font-family:var(--sans); font-size:9px; font-weight:400;
+  letter-spacing:.22em; text-transform:uppercase; color:var(--ink2);
+  display:flex; align-items:center; gap:12px;
+}
+.ft-hint::before { content:''; width:28px; height:1px; background:var(--ink3); }
+.ft-prog {
+  flex:1; max-width:320px; margin:0 40px;
+  height:1px; background:var(--ink3); position:relative;
+}
+.ft-prog-fill {
+  position:absolute; top:0; left:0; height:100%;
+  background:var(--ink); transition:width .1s linear;
+  width:0%;
+}
+.ft-count {
+  font-family:var(--serif); font-style:italic; font-size:13px;
+  color:var(--ink2); letter-spacing:.04em;
+}
+.ft-count em { color:var(--ink); font-style:normal; font-weight:800; }
+
+/* ─── DETAIL OVERLAY ─── */
+#dv {
+  position:fixed; inset:0; z-index:500;
+  background:var(--bg);
+  display:grid; grid-template-columns:50% 50%;
+  clip-path:inset(50% 50% 50% 50%);
+  transition:clip-path .85s cubic-bezier(.77,0,.175,1);
+  pointer-events:none;
+}
+#dv.open {
+  clip-path:inset(0% 0% 0% 0%);
+  pointer-events:all;
+}
+.dv-vis {
+  position:relative; overflow:hidden; background:#000;
+}
+.dv-vis svg {
+  position:absolute; inset:0; width:100%; height:100%;
+  transform:scale(1.1); opacity:.62; filter:saturate(.8);
+  transition:transform 1.6s cubic-bezier(.165,.84,.44,1);
+}
+#dv.open .dv-vis svg { transform:scale(1); }
+.dv-vis::after {
+  content:''; position:absolute; inset:0; z-index:2;
+  background:linear-gradient(90deg,transparent 40%,var(--bg) 100%);
+}
+.dv-vis::before {
+  content:''; position:absolute; inset:0; z-index:3; pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 3px,rgba(255,255,255,.022) 3px,rgba(255,255,255,.022) 4px);
+}
+.dv-body {
+  display:flex; flex-direction:column; justify-content:center;
+  padding:80px 60px 80px 44px;
+  opacity:0; transform:translateX(22px);
+  transition:opacity .6s ease .44s, transform .6s ease .44s;
+}
+#dv.open .dv-body { opacity:1; transform:translateX(0); }
+
+.dv-eyebrow {
+  font-family:var(--sans); font-size:9px; font-weight:700;
+  letter-spacing:.26em; text-transform:uppercase; color:var(--gold);
+  display:flex; align-items:center; gap:14px; margin-bottom:14px;
+}
+.dv-eyebrow::before { content:''; width:30px; height:1px; background:var(--gold); }
+.dv-t {
+  font-family:var(--serif); font-weight:800; line-height:.92;
+  letter-spacing:-.02em; color:var(--ink);
+  font-size:clamp(46px,5vw,80px); margin-bottom:6px;
+}
+.dv-t em { font-style:italic; color:var(--gold); }
+.dv-sub {
+  font-family:var(--serif); font-style:italic;
+  font-size:clamp(14px,1.4vw,19px); color:var(--ink2);
+  margin-bottom:28px; letter-spacing:.02em;
+}
+.dv-tags { display:flex; flex-wrap:wrap; gap:7px; margin-bottom:24px; }
+.dv-tag {
+  padding:4px 12px; border:1px solid var(--ink3);
+  font-family:var(--sans); font-size:9px; font-weight:400;
+  letter-spacing:.18em; text-transform:uppercase; color:var(--ink2);
+}
+.dv-tag.hi { border-color:var(--gold); color:var(--gold); }
+.dv-srow { display:flex; align-items:center; gap:20px; margin-bottom:24px; }
+.dv-snum {
+  font-family:var(--serif); font-weight:800; font-size:54px;
+  color:var(--ink); line-height:1;
+}
+.dv-snum span { font-size:16px; color:var(--ink2); }
+.dv-bwrap { flex:1; }
+.dv-blbl {
+  font-family:var(--sans); font-size:8px; letter-spacing:.18em;
+  text-transform:uppercase; color:var(--ink2); margin-bottom:8px;
+  display:flex; justify-content:space-between;
+}
+.dv-track { height:1px; background:var(--ink3); position:relative; overflow:hidden; }
+.dv-fill {
+  position:absolute; top:0; left:0; height:100%;
+  background:linear-gradient(90deg,var(--gold),#e8b87a);
+  width:0%; transition:width 1.1s cubic-bezier(.165,.84,.44,1) .75s;
+}
+.dv-desc {
+  font-family:var(--serif); font-size:14px; line-height:1.82;
+  color:var(--ink2); max-width:320px; margin-bottom:36px;
+}
+.dv-cta { display:flex; gap:12px; }
+.btn-p {
+  padding:13px 32px; background:var(--ink); color:var(--bg);
+  font-family:var(--sans); font-size:9px; font-weight:700;
+  letter-spacing:.22em; text-transform:uppercase;
+  border:none; cursor:none; transition:background .2s;
+}
+.btn-p:hover { background:#d8d0c0; }
+.btn-w {
+  padding:13px 22px; background:transparent;
+  border:1px solid var(--ink3); color:var(--ink2);
+  font-family:var(--sans); font-size:9px; font-weight:400;
+  letter-spacing:.18em; text-transform:uppercase;
+  cursor:none; transition:border-color .22s, color .22s;
+}
+.btn-w:hover { border-color:var(--ink); color:var(--ink); }
+#btn-x {
+  position:fixed; top:26px; right:42px; z-index:600;
+  padding:10px 18px; border:1px solid var(--ink3); color:var(--ink2);
+  font-family:var(--sans); font-size:9px; font-weight:400;
+  letter-spacing:.2em; text-transform:uppercase;
+  opacity:0; pointer-events:none; cursor:none;
+  transition:opacity .4s ease 1s, color .22s, border-color .22s;
+}
+#btn-x:hover { color:var(--ink); border-color:var(--ink); }
+#dv.open ~ #btn-x { opacity:1; pointer-events:all; }
+
+body.dragging, body.dragging * { cursor: none !important; }
+@keyframes fu { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:none} }
+#hd  { animation:fu .9s cubic-bezier(.22,1,.36,1) both; }
+#ft  { animation:fu .9s cubic-bezier(.22,1,.36,1) .15s both; }
+
+@media(max-width:768px){
+  /* header */
+  #hd { padding:14px 18px 10px; }
+  .hnav { display:none; }
+  .logo { font-size:16px; }
+  .logo-tag { font-size:8px; }
+
+  /* hide custom cursor */
+  #cur-dot { display:none; }
+
+  /* bg word smaller */
+  #bgw { font-size:38vw; bottom:-2vw; }
+
+  /* track: smaller cards, less gap */
+  #track { gap:8px; padding:0 20px; transform-style:flat; }
+  #track-wrap { padding-top:54px; padding-bottom:56px; perspective:none; }
+
+  /* cards: narrower + shorter for mobile */
+  .gi { width:58px !important; height:210px !important; transform-style:flat !important; }
+  .gi-num { font-size:7px; top:6px; right:6px; }
+
+  /* footer */
+  #ft { padding:10px 18px; }
+  .ft-prog { display:none; }
+  .ft-hint { font-size:8px; letter-spacing:.15em; }
+  .ft-count { font-size:11px; }
+
+  /* detail view: single column */
+  #dv { grid-template-columns:1fr; }
+  .dv-vis { display:none; }
+  .dv-body { padding:60px 20px 28px; }
+  .dv-t { font-size:clamp(36px,10vw,52px); }
+  .dv-sub { font-size:14px; margin-bottom:20px; }
+  .dv-tags { margin-bottom:18px; }
+  .dv-srow { margin-bottom:18px; }
+  .dv-snum { font-size:40px; }
+  .dv-desc { font-size:13px; margin-bottom:26px; }
+
+  /* close button */
+  #btn-x { top:14px; right:16px; padding:8px 12px; font-size:8px; }
+}
+
+/* very small phones */
+@media(max-width:390px){
+  .gi { width:50px !important; height:185px !important; }
+}
+</style>
+</head>
+<body>
+
+<div id="cur-dot"></div>
+<div id="bgw">UX laboratory</div>
+
+<header id="hd">
+  <div class="logo">UX IA LABS <span class="logo-tag">Archive / 2026</span></div>
+  <nav class="hnav">
+    <span class="hl">Collection</span>
+    <span class="hl">Reviews</span>
+    <span class="hl">Releases</span>
+  </nav>
+</header>
+
+<div id="track-wrap">
+  <div id="track"></div>
+</div>
+
+<footer id="ft">
+  <div class="ft-hint" id="ftHint">Drag to explore</div>
+  <div class="ft-prog"><div class="ft-prog-fill" id="progFill"></div></div>
+  <div class="ft-count">No. <em id="ftNum">01</em> of 40</div>
+</footer>
+
+<!-- Detail -->
+<div id="dv">
+  <div class="dv-vis" id="dvVis"></div>
+  <div class="dv-body">
+    <div class="dv-eyebrow" id="dvGenre">Genre</div>
+    <div class="dv-t" id="dvT">T</div>
+    <div class="dv-sub" id="dvSub">S</div>
+    <div class="dv-tags" id="dvTags"></div>
+    <div class="dv-srow">
+      <div class="dv-snum" id="dvSN">—<span>/100</span></div>
+      <div class="dv-bwrap">
+        <div class="dv-blbl"><span>Critic Score</span><span id="dvSL">—</span></div>
+        <div class="dv-track"><div class="dv-fill" id="dvFill"></div></div>
+      </div>
+    </div>
+    <p class="dv-desc" id="dvDesc"></p>
+    <div class="dv-cta">
+      <button class="btn-p">▶ Play Now</button>
+      <button class="btn-w">+ Wishlist</button>
+    </div>
+  </div>
+</div>
+<div id="btn-x">✕  Close</div>
+
+<script>
+/* ══ DATA ══ */
+const GAMES = [
+  { g:'Open World RPG',    t1:'ELYSIAN',   t2:'ATLAS',    sub:'A World Without Edges',           score:96, year:'2024', pegi:'18+', tags:['Open World','Narrative','100+ hrs'],   desc:'Traverse a mythological continent where every valley hides a forgotten civilization. Your choices reshape empires, topple gods, and rewrite history.',               pal:{bg:'#1b2a38',a:'#4a8fa8',b:'#9ac8dc',acc:'#d4a843'}, w:89,  h:320 },
+  { g:'Tactical Shooter',  t1:'FRACTURE',  t2:'LINE',     sub:'Precision Over Power',            score:89, year:'2024', pegi:'16+', tags:['5v5','Competitive','Ranked'],           desc:'A hyper-tactical shooter where map geometry is your greatest weapon. Master 12 operators across ever-shifting asymmetrical arenas.',                                pal:{bg:'#1e1208',a:'#c25c2a',b:'#e8a060',acc:'#e8a060'}, w:89,  h:320 },
+  { g:'Puzzle',            t1:'STILL',     t2:'WATER',    sub:'Silence Has a Shape',             score:93, year:'2024', pegi:'7+',  tags:['Puzzle','Meditative','Indie'],           desc:'Manipulate reflections of a mirrored world to unlock passages between dimensions. A wordless poem rendered in 60fps tranquility.',                                    pal:{bg:'#162218',a:'#4a8c6a',b:'#80c8a0',acc:'#80c8a0'}, w:89,  h:320 },
+  { g:'Narrative RPG',     t1:'HOLLOW',    t2:'CROWN',    sub:'Every Throne Costs Something',    score:91, year:'2024', pegi:'12+', tags:['Story','Choice-Driven','Dark Fantasy'],  desc:'A branching political drama set in a decaying monarchy. Forge alliances, betray confidants, and decide what kind of ruler history will remember.',                   pal:{bg:'#1e1018',a:'#8c4a6a',b:'#c888a8',acc:'#c888a8'}, w:89,  h:320 },
+  { g:'Racing Sim',        t1:'APEX',      t2:'HOUR',     sub:'Born for the Last Corner',        score:85, year:'2024', pegi:'3+',  tags:['Racing','Simulation','60fps'],           desc:'Physics-first circuit racing with 200 licensed cars and 40 real-world tracks. Feel every surface change, every weight shift.',                                       pal:{bg:'#101620',a:'#3a5a8c',b:'#6898c8',acc:'#6898c8'}, w:89,  h:320 },
+  { g:'Survival Horror',   t1:'LAST',      t2:'PARISH',   sub:'God Left First',                  score:88, year:'2024', pegi:'18+', tags:['Horror','Survival','Atmospheric'],       desc:'A crumbling cathedral town sealed from the world. Ration resources, decode cryptic rituals, survive until the fog lifts — if it lifts.',                            pal:{bg:'#120c0c',a:'#6a3030',b:'#a86060',acc:'#a86060'}, w:89,  h:320 },
+  { g:'Deckbuilder',       t1:'GILDED',    t2:'CHAOS',    sub:'Stack the Odds, Break the Rules', score:94, year:'2024', pegi:'12+', tags:['Roguelike','Deckbuilder','Endless'],     desc:'Draft cards, forge relics, construct increasingly absurd combo engines across procedurally generated towers. No two runs share a ceiling.',                          pal:{bg:'#1a180c',a:'#8c7820',b:'#c8b040',acc:'#c8b040'}, w:89,  h:320 },
+  { g:'Platformer',        t1:'VELVET',    t2:'JUMP',     sub:'Momentum Is Everything',          score:90, year:'2024', pegi:'7+',  tags:['Platformer','Movement','Indie'],         desc:'A fluid action-platformer where movement history shapes the level. Leave velocity trails, rewind momentum, and sequence impossible chains.',                          pal:{bg:'#140e22',a:'#6a4a9c',b:'#a878d8',acc:'#a878d8'}, w:89,  h:320 },
+  { g:'City Builder',      t1:'MERIDIAN',  t2:'CITY',     sub:'Every District Tells a Story',    score:87, year:'2024', pegi:'3+',  tags:['City Builder','Strategy','Relaxing'],    desc:'Build a living metropolis across five eras of architecture. Balance culture, infrastructure, and citizen happiness in a beautifully rendered sandbox.',             pal:{bg:'#101c12',a:'#4a7858',b:'#80b890',acc:'#80b890'}, w:89,  h:320 },
+  { g:'Fighting',          t1:'IRON',      t2:'FORM',     sub:'The Body Is the Weapon',          score:86, year:'2024', pegi:'12+', tags:['Fighting','PvP','Tournament'],           desc:'Sixteen martial arts styles. One arena. Frame-data obsessed, built for competitors yet accessible to everyone — the deepest roster in the genre.',                 pal:{bg:'#181008',a:'#8c6030',b:'#c8a060',acc:'#c8a060'}, w:89,  h:320 },
+  { g:'Stealth',           t1:'PHANTOM',   t2:'WIRE',     sub:'Leave No Trace',                  score:92, year:'2024', pegi:'16+', tags:['Stealth','Cyber','Open World'],         desc:'Become a ghost operative in a surveillance state. Disable cameras, hack drones, and vanish without a trace through a paranoid cityscape.',                          pal:{bg:'#0e1820',a:'#2a6888',b:'#70b8d8',acc:'#70b8d8'}, w:89,  h:320 },
+  { g:'JRPG',              t1:'SILVER',    t2:'THREAD',   sub:'A Fate Woven in Stars',           score:90, year:'2024', pegi:'12+', tags:['JRPG','Turn-Based','Story'],            desc:'A sweeping Japanese RPG spanning three generations. Strategic turn-based combat, a gorgeous hand-painted world, and a story that earns every tear.',              pal:{bg:'#1c1424',a:'#8058a8',b:'#c098e8',acc:'#e0b8ff'}, w:89,  h:320 },
+  { g:'Metroidvania',      t1:'DEEP',      t2:'MARROW',   sub:'Descend. Discover. Die.',         score:91, year:'2024', pegi:'16+', tags:['Metroidvania','Exploration','Hardcore'], desc:'A precision platformer set inside a dying colossus. Every chamber conceals a secret; every death teaches you the anatomy of failure.',                               pal:{bg:'#181014',a:'#7a2848',b:'#c87898',acc:'#e898b8'}, w:89,  h:320 },
+  { g:'Space Strategy',    t1:'VOID',      t2:'SENATE',   sub:'Power Is the Only Currency',      score:88, year:'2024', pegi:'12+', tags:['Strategy','4X','Space'],                desc:'A grand-strategy game set in a crumbling interstellar republic. Forge coalitions, starve enemies with trade routes, and outlast empires through cunning.',         pal:{bg:'#0c1020',a:'#304888',b:'#7090d8',acc:'#90b8ff'}, w:89,  h:320 },
+  { g:'Rhythm Action',     t1:'PULSE',     t2:'BREAK',    sub:'Feel Every Beat',                 score:87, year:'2024', pegi:'7+',  tags:['Rhythm','Music','Arcade'],              desc:'A kinetic rhythm game where levels are built from the songs themselves. 400 tracks, real-time generation, infinite replayability.',                               pal:{bg:'#1a0c1e',a:'#9a2898',b:'#d878d8',acc:'#ff88ff'}, w:89,  h:320 },
+  { g:'Western RPG',       t1:'DUST',      t2:'GOSPEL',   sub:'Redemption Is Earned in Ash',     score:93, year:'2024', pegi:'18+', tags:['Western','RPG','Open World'],           desc:'A sun-bleached open world set in a collapsing frontier. Hunt bounties, broker peace, or burn it all down — the desert remembers everything.',                    pal:{bg:'#201408',a:'#a86828',b:'#e0b068',acc:'#f0c878'}, w:89,  h:320 },
+  { g:'Submarine Sim',     t1:'BLACK',     t2:'DEPTH',    sub:'The Ocean Holds No Mercy',        score:85, year:'2024', pegi:'16+', tags:['Simulation','Naval','Tense'],            desc:'Command a nuclear submarine on classified deep-sea missions. Manage oxygen, crew morale, and crushing pressure — one wrong call floods everything.',              pal:{bg:'#081418',a:'#1a6878',b:'#50a8c0',acc:'#70c8e0'}, w:89,  h:320 },
+  { g:'Horror Adventure',  t1:'PALE',      t2:'STATION',  sub:'There Is No Signal Here',         score:89, year:'2024', pegi:'18+', tags:['Horror','Narrative','Atmospheric'],     desc:'An abandoned Antarctic research station, a voice on a dead frequency, and a mystery that collapses the boundary between past and present.',                       pal:{bg:'#141820',a:'#3a4868',b:'#7888b8',acc:'#a0b0e0'}, w:89,  h:320 },
+  { g:'Extraction Shooter',t1:'WIRE',      t2:'GATE',     sub:'Extract or Die Trying',           score:84, year:'2024', pegi:'16+', tags:['Extraction','PvPvE','Online'],           desc:'Drop in, secure objectives, fight off AI and rival squads, extract alive. Every run is a calculated gamble where greed is the most dangerous enemy.',            pal:{bg:'#141010',a:'#783828',b:'#c07858',acc:'#e09878'}, w:89,  h:320 },
+  { g:'Cozy Farming',      t1:'SOFT',      t2:'SEASON',   sub:'Grow Something Beautiful',        score:88, year:'2024', pegi:'3+',  tags:['Farming','Cozy','Relaxing'],             desc:'A slow-paced farming RPG set in a village that shifts with every season. Cultivate rare crops, befriend quirky townsfolk, and restore the valley\'s lost magic.', pal:{bg:'#141c10',a:'#5a8840',b:'#98c878',acc:'#b8e898'}, w:89,  h:320 },
+  { g:'Naval Strategy',    t1:'IRON',      t2:'TIDE',     sub:'Command the Horizon',             score:86, year:'2024', pegi:'12+', tags:['Strategy','Naval','Historical'],        desc:'Command fleets across historically inspired naval campaigns. Manage supply lines, weather storms, and outmaneuver admirals in an age of sail and steel.',          pal:{bg:'#0c1420',a:'#284870',b:'#6090b8',acc:'#80b8e0'}, w:89,  h:320 },
+  { g:'Sci-Fi RPG',        t1:'NULL',      t2:'SIGNAL',   sub:'Between Worlds, No One Hears',    score:91, year:'2024', pegi:'16+', tags:['Sci-Fi','RPG','Narrative'],             desc:'A lone signal analyst uncovers a transmission predating the universe. An intimate, branching sci-fi RPG about the weight of forbidden knowledge.',                pal:{bg:'#101820',a:'#285888',b:'#60a8d8',acc:'#90d0ff'}, w:89,  h:320 },
+  { g:'Arena Shooter',     t1:'HEAT',      t2:'ROUND',    sub:'Every Second Is a Decision',      score:83, year:'2024', pegi:'16+', tags:['Arena','FPS','Competitive'],            desc:'A pure arena shooter stripped to its essentials. No abilities, no loadouts — just raw aim, movement, and the knowledge to read the room.',                      pal:{bg:'#1c1008',a:'#b06030',b:'#e89860',acc:'#f8c080'}, w:89,  h:320 },
+  { g:'Puzzle Platformer',  t1:'FOLD',     t2:'THEORY',   sub:'The World Is a Problem to Solve', score:92, year:'2024', pegi:'7+',  tags:['Puzzle','Platformer','Physics'],        desc:'Manipulate gravity, fold space, and invert logic to navigate a world that obeys no fixed rules. Every solution reveals a deeper question.',                      pal:{bg:'#181820',a:'#484888',b:'#8888c8',acc:'#b8b8ff'}, w:89,  h:320 },
+  { g:'Open World Horror',  t1:'GREY',     t2:'COUNTRY',  sub:'Something Lives in the Fog',      score:88, year:'2024', pegi:'18+', tags:['Horror','Open World','Survival'],       desc:'A vast, fog-covered rural expanse where the creatures know the land better than you do. Hunt, hide, and unravel the origin of the grey.',                         pal:{bg:'#141414',a:'#505050',b:'#909090',acc:'#c8c8c8'}, w:89,  h:320 },
+  { g:'Tactical RPG',      t1:'ORDER',     t2:'BREAK',    sub:'Plans Never Survive Contact',     score:90, year:'2024', pegi:'12+', tags:['TRPG','Tactics','Story'],               desc:'Grid-based tactical combat fused with deep character narrative. Every battle is a chess match; every loss shapes the story that follows.',                        pal:{bg:'#181410',a:'#886040',b:'#c8a070',acc:'#e8c890'}, w:89,  h:320 },
+  { g:'Climbing Sim',      t1:'BARE',      t2:'ROCK',     sub:'The Mountain Does Not Care',      score:87, year:'2024', pegi:'3+',  tags:['Simulation','Climbing','Relaxing'],     desc:'A meditative first-person climbing simulator on a 4000-metre peak. No HUD, no enemies — just your hands, the rock, and the consequences of poor decisions.',     pal:{bg:'#201c18',a:'#987858',b:'#c8a878',acc:'#e8c898'}, w:89,  h:320 },
+  { g:'Dungeon Crawler',   t1:'SEVENTH',   t2:'SEAL',     sub:'There Is Always One More Door',   score:89, year:'2024', pegi:'16+', tags:['Dungeon','Crawler','Loot'],             desc:'A punishing first-person dungeon crawler with hand-crafted labyrinths, cryptic lore, and loot that fundamentally rewrites your build every floor.',              pal:{bg:'#100c18',a:'#503870',b:'#9070b0',acc:'#c0a0e0'}, w:89,  h:320 },
+  { g:'Survival Crafting', t1:'LAST',      t2:'LIGHT',    sub:'Build Before Nightfall',          score:85, year:'2024', pegi:'12+', tags:['Survival','Crafting','Coop'],           desc:'Stranded on a world with a 14-hour night cycle. Gather, craft, fortify, and survive the things that come when the sun goes down.',                              pal:{bg:'#181c10',a:'#586830',b:'#98a860',acc:'#c8d890'}, w:89,  h:320 },
+  { g:'Mystery Visual Novel',t1:'WHEN',    t2:'SHE FELL', sub:'The Truth Arrives Late',          score:93, year:'2024', pegi:'16+', tags:['Visual Novel','Mystery','Branching'],   desc:'A dense mystery visual novel with 40+ endings. One woman. One apartment building. Six days before the fall. Everything is a clue you might have missed.',         pal:{bg:'#1c1018',a:'#784060',b:'#b87898',acc:'#e8a8c8'}, w:89,  h:320 },
+  { g:'Soulslike',          t1:'ASH',      t2:'COVENANT', sub:'Die. Learn. Die Again.',           score:94, year:'2024', pegi:'18+', tags:['Soulslike','Action','Hardcore'],        desc:'A brutal third-person action RPG set in a crumbling theocracy. Parry, riposte, and master the rhythm of punishment in a world that wants you dead.',              pal:{bg:'#18100c',a:'#904830',b:'#d09070',acc:'#f0b888'}, w:89,  h:320 },
+  { g:'Immersive Sim',      t1:'OPEN',     t2:'HAND',     sub:'Every Problem Has Ten Solutions',  score:92, year:'2024', pegi:'16+', tags:['Immersive Sim','Stealth','RPG'],        desc:'A systems-driven immersive sim set in a corporate arcology. Hack, persuade, fight, or ghost your way through a labyrinth of interconnected decisions.',           pal:{bg:'#101c20',a:'#306878',b:'#70b8c8',acc:'#90d8e8'}, w:89,  h:320 },
+  { g:'Survival Horror',    t1:'COLD',     t2:'MERCY',    sub:'The Ice Does Not Forgive',         score:87, year:'2024', pegi:'18+', tags:['Survival','Horror','Exploration'],      desc:'Stranded on a glacial archipelago with no radio and dwindling supplies. Something old lives beneath the permafrost, and it has been waiting.',                    pal:{bg:'#101820',a:'#305878',b:'#70a8c8',acc:'#a8d0e8'}, w:89,  h:320 },
+  { g:'Grand Strategy',     t1:'IRON',     t2:'CENTURY',  sub:'History Is Written by the Bold',   score:90, year:'2024', pegi:'12+', tags:['Grand Strategy','Historical','4X'],     desc:'Command a minor nation through a century of conflict and diplomacy. Every decade the world reshapes; only the most adaptable dynasties survive the long game.',    pal:{bg:'#1c1808',a:'#987828',b:'#d8b848',acc:'#f8d868'}, w:89,  h:320 },
+  { g:'Action Roguelite',   t1:'SURGE',    t2:'RUN',      sub:'Build Fast or Die Slow',           score:88, year:'2024', pegi:'12+', tags:['Roguelite','Action','Speedrun'],        desc:'A top-down roguelite where your build crystallizes in the first sixty seconds. Master the curve, push the meta, and clock the fastest run on the board.',          pal:{bg:'#1a0c08',a:'#c04828',b:'#f07848',acc:'#ff9858'}, w:89,  h:320 },
+  { g:'Psychological Horror',t1:'MIRROR',  t2:'SKIN',     sub:'You Are Not Who You Think',        score:91, year:'2024', pegi:'18+', tags:['Horror','Psychological','Narrative'],   desc:'A first-person psychological horror game with an unreliable narrator. The apartment changes when you are not looking. Nothing you remember is accurate.',          pal:{bg:'#181418',a:'#684868',b:'#b090b0',acc:'#d8b8d8'}, w:89,  h:320 },
+  { g:'Naval Roguelike',    t1:'DEAD',     t2:'WATER',    sub:'Sail Until You Cannot',            score:86, year:'2024', pegi:'12+', tags:['Roguelike','Naval','Strategy'],         desc:'Captain a cursed frigate through procedurally generated seas. Manage crew loyalty, weather supernatural storms, and choose which ports are worth the price.',      pal:{bg:'#0c1018',a:'#285070',b:'#6090b0',acc:'#80b8d8'}, w:89,  h:320 },
+  { g:'Sandbox Survival',   t1:'FIRST',    t2:'EMBER',    sub:'Light It and Let It Breathe',      score:85, year:'2024', pegi:'7+',  tags:['Sandbox','Survival','Crafting'],        desc:'A warmly lit survival sandbox set in a world recovering from catastrophe. Build shelter, nurture ecosystems, and help the land remember what green looks like.',   pal:{bg:'#201808',a:'#a06828',b:'#d8a848',acc:'#f0c870'}, w:89,  h:320 },
+  { g:'Puzzle Horror',      t1:'WRONG',    t2:'DOOR',     sub:'Some Rooms Should Stay Locked',    score:89, year:'2024', pegi:'18+', tags:['Puzzle','Horror','Escape'],             desc:'An escape-room horror game set across nine impossible rooms. Each puzzle solved opens a door to somewhere worse. The tenth room has no puzzle — just a choice.',   pal:{bg:'#100c10',a:'#602860',b:'#a060a0',acc:'#c880c8'}, w:89,  h:320 },
+];
+
+/* ══ SVG COVER ══ */
+function mkSVG(g, i, W, H){
+  const p = {...g.pal, bg: '#2a2a2a' };
+  const uid = 'sv'+i;
+  const cx = W/2, cy = H/2;
+  const arts = [
+    /* 0 */ `<polygon points="0,${H*.28} ${W},0 ${W},${H*.22} 0,${H*.5}" fill="${p.a}" fill-opacity=".22"/>
+             <polygon points="0,${H*.42} ${W},${H*.14} ${W},${H*.36} 0,${H*.64}" fill="${p.a}" fill-opacity=".1"/>
+             <circle cx="${cx}" cy="${cy+H*.06}" r="${Math.min(W,H)*.23}" fill="none" stroke="${p.b}" stroke-width="1.4" stroke-opacity=".5"/>
+             <circle cx="${cx}" cy="${cy+H*.06}" r="${Math.min(W,H)*.15}" fill="${p.acc}" fill-opacity=".4"/>
+             <circle cx="${cx}" cy="${cy+H*.06}" r="${Math.min(W,H)*.06}" fill="${p.b}" fill-opacity=".85"/>`,
+    /* 1 */ `${Array.from({length:10},(_,n)=>`<line x1="${n*(W/9)}" y1="0" x2="${n*(W/9)}" y2="${H}" stroke="${p.a}" stroke-width=".5" stroke-opacity=".18"/>`).join('')}
+             ${Array.from({length:14},(_,n)=>`<line x1="0" y1="${n*(H/13)}" x2="${W}" y2="${n*(H/13)}" stroke="${p.a}" stroke-width=".5" stroke-opacity=".18"/>`).join('')}
+             <rect x="${W*.18}" y="${H*.28}" width="${W*.64}" height="${H*.44}" fill="${p.a}" fill-opacity=".13" stroke="${p.b}" stroke-width="1.3"/>
+             <rect x="${W*.28}" y="${H*.35}" width="${W*.44}" height="${H*.3}" fill="${p.acc}" fill-opacity=".32"/>`,
+    /* 2 */ `${[.28,.22,.16,.1,.05,.02].map((fr,ri)=>`<circle cx="${cx}" cy="${cy}" r="${Math.min(W,H)*fr}" fill="none" stroke="${p.b}" stroke-width="${1.2-ri*.14}" stroke-opacity="${.52-ri*.07}"/>`).join('')}
+             <line x1="${cx}" y1="${H*.12}" x2="${cx}" y2="${H*.88}" stroke="${p.a}" stroke-width=".7" stroke-opacity=".28"/>
+             <line x1="${W*.08}" y1="${cy}" x2="${W*.92}" y2="${cy}" stroke="${p.a}" stroke-width=".7" stroke-opacity=".28"/>
+             <circle cx="${cx}" cy="${cy}" r="${Math.min(W,H)*.03}" fill="${p.acc}" fill-opacity=".92"/>`,
+    /* 3 */ `<polygon points="${cx},${H*.1} ${W*.84},${H*.72} ${W*.16},${H*.72}" fill="${p.a}" fill-opacity=".16" stroke="${p.b}" stroke-width="1.3"/>
+             <polygon points="${cx},${H*.2} ${W*.76},${H*.66} ${W*.24},${H*.66}" fill="${p.b}" fill-opacity=".2" stroke="${p.b}" stroke-width=".9"/>
+             <polygon points="${cx},${H*.34} ${W*.64},${H*.6} ${W*.36},${H*.6}" fill="${p.acc}" fill-opacity=".52"/>`,
+    /* 4 */ `${Array.from({length:20},(_,n)=>{const y=n*(H/19)+H*.04,w=W*.22+n*(W*.032);return`<rect x="${W-w}" y="${y}" width="${w}" height="${n%5===0?2:1}" fill="${p.b}" fill-opacity="${.08+n*.016}"/>`;}).join('')}
+             <circle cx="${W*.28}" cy="${cy}" r="${Math.min(W,H)*.12}" fill="${p.acc}" fill-opacity=".62"/>
+             <circle cx="${W*.28}" cy="${cy}" r="${Math.min(W,H)*.05}" fill="#fff" fill-opacity=".8"/>`,
+    /* 5 */ `<path d="M${W*.26},${H} L${W*.26},${H*.38} Q${cx},${H*.12} ${W*.74},${H*.38} L${W*.74},${H} Z" fill="${p.a}" fill-opacity=".16" stroke="${p.b}" stroke-width="1.3"/>
+             <path d="M${W*.34},${H} L${W*.34},${H*.44} Q${cx},${H*.22} ${W*.66},${H*.44} L${W*.66},${H} Z" fill="${p.a}" fill-opacity=".13" stroke="${p.b}" stroke-width=".9"/>
+             <circle cx="${cx}" cy="${H*.28}" r="${Math.min(W,H)*.07}" fill="${p.acc}" fill-opacity=".7"/>`,
+    /* 6 */ `<rect x="${W*.08}" y="${H*.06}" width="${W*.84}" height="${H*.88}" fill="none" stroke="${p.a}" stroke-width=".9" stroke-opacity=".3"/>
+             <polygon points="${cx},${H*.14} ${W*.84},${cy} ${cx},${H*.86} ${W*.16},${cy}" fill="none" stroke="${p.b}" stroke-width="1.2" stroke-opacity=".4"/>
+             <polygon points="${cx},${H*.3} ${W*.7},${cy} ${cx},${H*.7} ${W*.3},${cy}" fill="${p.a}" fill-opacity=".18"/>
+             <polygon points="${cx},${H*.4} ${W*.6},${cy} ${cx},${H*.6} ${W*.4},${cy}" fill="${p.acc}" fill-opacity=".5"/>
+             <circle cx="${cx}" cy="${cy}" r="${Math.min(W,H)*.03}" fill="#fff" fill-opacity=".8"/>`,
+    /* 7 */ `<ellipse cx="${cx*.8}" cy="${cy*.76}" rx="${W*.36}" ry="${H*.28}" fill="${p.a}" fill-opacity=".2" transform="rotate(-18,${cx*.8},${cy*.76})"/>
+             <ellipse cx="${cx*1.2}" cy="${cy*1.24}" rx="${W*.3}" ry="${H*.24}" fill="${p.b}" fill-opacity=".16" transform="rotate(14,${cx*1.2},${cy*1.24})"/>
+             <ellipse cx="${cx}" cy="${cy}" rx="${W*.16}" ry="${H*.14}" fill="${p.acc}" fill-opacity=".32"/>
+             <ellipse cx="${cx}" cy="${cy}" rx="${W*.06}" ry="${H*.055}" fill="#fff" fill-opacity=".76"/>`,
+    /* 8 */ `${[[0,0],[-.5,.5],[.5,.5],[0,1],[-.5,1.5],[.5,1.5],[0,2]].map(([dx,dy],ci)=>{
+               const hx=cx+dx*(W*.28), hy=H*.2+dy*(H*.14), hr=W*.14;
+               return `<polygon points="${hx},${hy-hr} ${hx+hr*.86},${hy-hr*.5} ${hx+hr*.86},${hy+hr*.5} ${hx},${hy+hr} ${hx-hr*.86},${hy+hr*.5} ${hx-hr*.86},${hy-hr*.5}" fill="${p.a}" fill-opacity="${.06+ci*.04}" stroke="${p.b}" stroke-width=".75" stroke-opacity=".35"/>`;
+             }).join('')}
+             <circle cx="${cx}" cy="${H*.72}" r="${W*.08}" fill="${p.acc}" fill-opacity=".7"/>`,
+    /* 9 */ `${Array.from({length:11},(_,row)=>Array.from({length:Math.ceil(W/22)+1},(_,col)=>{
+               const px=col*22+(row%2)*11, py=row*28+14;
+               const d=Math.hypot(px-cx,py-cy), r=Math.max(.6,9-d/(Math.min(W,H)*.09));
+               return `<circle cx="${px}" cy="${py}" r="${r}" fill="${p.b}" fill-opacity="${.14+r*.05}"/>`;
+             }).join('')).join('')}
+             <circle cx="${cx}" cy="${cy}" r="${Math.min(W,H)*.14}" fill="${p.a}" fill-opacity=".25" stroke="${p.b}" stroke-width="1.3"/>
+             <circle cx="${cx}" cy="${cy}" r="${Math.min(W,H)*.07}" fill="${p.acc}" fill-opacity=".68"/>`,
+  ];
+
+  return `<svg viewBox="0 0 ${W} ${H}" xmlns="http://www.w3.org/2000/svg" preserveAspectRatio="xMidYMid slice">
+    <defs><linearGradient id="${uid}" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="42%" stop-color="${p.bg}" stop-opacity="0"/>
+      <stop offset="100%" stop-color="${p.bg}" stop-opacity=".93"/>
+    </linearGradient></defs>
+    <rect width="${W}" height="${H}" fill="${p.bg}"/>
+    ${arts[i % arts.length]}
+    <rect width="${W}" height="${H}" fill="url(#${uid})"/>
+  </svg>`;
+}
+
+/* ══ BUILD ITEMS ══ */
+const track = document.getElementById('track');
+const ITEMS = [];
+
+GAMES.forEach((g, i) => {
+  const el = document.createElement('div');
+  el.className = 'gi';
+  el.style.width  = g.w + 'px';
+  el.style.height = g.h + 'px';
+
+  const inner = document.createElement('div');
+  inner.className = 'gi-inner';
+  inner.innerHTML = mkSVG(g, i, g.w, g.h);
+
+  const num = document.createElement('div');
+  num.className = 'gi-num';
+  num.textContent = String(i+1).padStart(2,'0');
+
+  const info = document.createElement('div');
+  info.className = 'gi-info';
+  info.innerHTML = `<div class="gi-genre">${g.g}</div>
+                    <div class="gi-title">${g.t1} ${g.t2}</div>
+                    <div class="gi-score">${g.score}/100</div>`;
+
+  el.appendChild(inner);
+  el.appendChild(num);
+  el.appendChild(info);
+  track.appendChild(el);
+
+  el.addEventListener('click', () => openDetail(i));
+
+  // Combined rotateY + scaleY spring
+  let rotY = 0, rotVY = 0;
+  let scaleH = 1, scaleVH = 0;
+  let animRaf = null;
+
+  function springAnim(targetRot, targetScale) {
+    cancelAnimationFrame(animRaf);
+    function tick() {
+      const fR = (targetRot   - rotY)   * 90  - rotVY  * 14;
+      const fS = (targetScale - scaleH) * 55  - scaleVH * 12;
+      rotVY  += fR / 60;  rotY   += rotVY  / 60;
+      scaleVH += fS / 60; scaleH += scaleVH / 60;
+      el.style.transform = `rotateY(${rotY}deg) scaleY(${scaleH})`;
+      const doneR = Math.abs(rotY   - targetRot)   < 0.02 && Math.abs(rotVY)  < 0.02;
+      const doneS = Math.abs(scaleH - targetScale) < 0.002 && Math.abs(scaleVH) < 0.002;
+      if (doneR && doneS) {
+        rotY = targetRot; scaleH = targetScale; rotVY = 0; scaleVH = 0;
+        el.style.transform = `rotateY(${targetRot}deg) scaleY(${targetScale})`;
+        return;
+      }
+      animRaf = requestAnimationFrame(tick);
+    }
+    tick();
+  }
+
+  ITEMS.push({ el, g, baseW:g.w, baseH:g.h,
+    setWave(deg, sy) { springAnim(deg, sy); }
+  });
+});
+
+/* ══ HORIZONTAL DRAG ONLY ══ */
+let txTarget = 0, txCur = 0, txPrev = 0;
+let isDrag = false, dragSX = 0, dragTX0 = 0;
+let isDetailOpen = false;
+
+function maxScroll() {
+  let total = ITEMS.reduce((s,it) => s + it.baseW + 14, 0) - 14;
+  return Math.max(0, total - window.innerWidth + 96);
+}
+function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
+
+window.addEventListener('mousedown', e => {
+  if (isDetailOpen) return;
+  isDrag = true; dragSX = e.pageX; dragTX0 = txTarget;
+  document.body.classList.add('dragging');
+});
+window.addEventListener('mousemove', e => {
+  if (!isDrag || isDetailOpen) return;
+  txTarget = clamp(dragTX0 - (e.pageX - dragSX), 0, maxScroll());
+});
+window.addEventListener('mouseup', () => {
+  isDrag = false;
+  document.body.classList.remove('dragging');
+});
+window.addEventListener('mouseleave', () => {
+  isDrag = false;
+  document.body.classList.remove('dragging');
+});
+
+window.addEventListener('touchstart', e => {
+  if (isDetailOpen) return;
+  isDrag=true; dragSX=e.touches[0].pageX; dragTX0=txTarget;
+  document.body.classList.add('dragging');
+}, {passive:true});
+window.addEventListener('touchmove', e => {
+  if (!isDrag||isDetailOpen) return;
+  txTarget = clamp(dragTX0-(e.touches[0].pageX-dragSX), 0, maxScroll());
+}, {passive:true});
+window.addEventListener('touchend', () => {
+  isDrag = false;
+  document.body.classList.remove('dragging');
+});
+
+/* ══ RENDER LOOP ══ */
+const progFill = document.getElementById('progFill');
+const ftNum    = document.getElementById('ftNum');
+
+// Pre-compute each item's x-center position in the track
+function getItemCenters() {
+  let acc = 0;
+  return ITEMS.map(it => {
+    const cx = acc + it.baseW / 2;
+    acc += it.baseW + 14;
+    return cx;
+  });
+}
+
+function loop() {
+  txPrev = txCur;
+  txCur += (txTarget - txCur) * .082;
+
+  // Raw velocity in px/frame — this drives everything
+  const vel = txCur - txPrev;
+  const absVel = Math.abs(vel);
+
+  /* ── No skew — clean translate only ── */
+  track.style.transform = `translateX(${-txCur}px)`;
+
+  const isMobile = window.innerWidth <= 768;
+
+  /* ── 3D wave: rotateY + scaleY combined ──
+     Mobile: simplified (no rotateY, gentle scaleY only)
+     Desktop: full 3D wave with speed-driven volume
+  */
+  const vpCenter = txCur + window.innerWidth / 2;
+  const speed = Math.abs(vel);
+  const intensity = Math.min(speed / 9, 1);
+
+  const maxAngle    = isMobile ? 0 : (isDrag ? 8 + intensity * 22 : 0);
+  const anglespread = window.innerWidth * 0.72;
+  const maxScale    = isMobile
+    ? (isDrag ? 1 + intensity * 0.18 : 1)   // mobile: subtle only
+    : (isDrag ? 1 + intensity * 0.72 : 1);  // desktop: full volume
+  const heightSpread = isMobile ? 220 : 530;
+
+  // Wave brightness: cards in the wave zone brighten with their scale
+  // Use speed (which lingers after drag due to lerp) so brightness fades naturally
+  const brightnessAmp = Math.min(speed / 9, 1);
+  const centers = getItemCenters();
+  ITEMS.forEach((it, idx) => {
+    const dist    = centers[idx] - vpCenter;
+    const absDist = Math.abs(dist);
+
+    // Rotation across wider area
+    const tA = Math.min(absDist / anglespread, 1);
+    const targetRot = (dist > 0 ? 1 : -1) * maxAngle * Math.sin(tA * Math.PI * 0.5);
+
+    // Height: smooth raised cosine arch — center tallest, fades over ~5 cards
+    let targetScale = 1;
+    let waveFactor = 0;
+    if (absDist < heightSpread) {
+      const tH = absDist / heightSpread;
+      waveFactor = Math.pow(Math.cos(tH * Math.PI * 0.5), 1.8);
+      targetScale = 1 + (maxScale - 1) * waveFactor;
+    }
+
+    it.setWave(targetRot, targetScale);
+
+    // Brighten SVG proportional to wave intensity — skip if card is hovered
+    if (!it.el.classList.contains('lit')) {
+      const sat = 0.65 + brightnessAmp * waveFactor * 1.55;
+      const bri = 0.82 + brightnessAmp * waveFactor * 1.08;
+      it.el.querySelector('svg').style.filter = `saturate(${sat}) brightness(${bri})`;
+    } else {
+      it.el.querySelector('svg').style.filter = '';
+    }
+  });
+
+  /* ── Progress bar ── */
+  const pct = maxScroll() > 0 ? txCur / maxScroll() * 100 : 0;
+  progFill.style.width = pct + '%';
+
+  /* ── Nearest item counter ── */
+  let acc = 0;
+  for (let i = 0; i < ITEMS.length; i++) {
+    const mid = acc + ITEMS[i].baseW / 2;
+    if (mid > txCur + window.innerWidth / 2 || i === ITEMS.length - 1) {
+      ftNum.textContent = String(i+1).padStart(2,'0');
+      break;
+    }
+    acc += ITEMS[i].baseW + 14;
+  }
+
+  requestAnimationFrame(loop);
+}
+loop();
+
+/* ══ CURSOR + JS HOVER ══ */
+// Touch highlight for mobile (touchstart = brief lit)
+window.addEventListener('touchstart', e => {
+  if (window.innerWidth > 768) return;
+  const touch = e.touches[0];
+  let found = -1;
+  for (let i = 0; i < ITEMS.length; i++) {
+    const r = ITEMS[i].el.getBoundingClientRect();
+    if (touch.clientX >= r.left && touch.clientX <= r.right &&
+        touch.clientY >= r.top  && touch.clientY <= r.bottom) {
+      found = i; break;
+    }
+  }
+  if (found >= 0) {
+    ITEMS[found].el.classList.add('lit');
+    setTimeout(() => ITEMS[found].el.classList.remove('lit'), 400);
+  }
+}, {passive:true});
+
+const cDot = document.getElementById('cur-dot');
+let litIdx = -1;
+
+window.addEventListener('mousemove', e => {
+  cDot.style.left = e.clientX + 'px';
+  cDot.style.top  = e.clientY + 'px';
+  cDot.style.opacity = '1';
+
+  if (isDrag) return; // don't update lit while dragging
+
+  // Find which card the cursor is over by comparing clientX to each card's bounding rect
+  let found = -1;
+  for (let i = 0; i < ITEMS.length; i++) {
+    const r = ITEMS[i].el.getBoundingClientRect();
+    if (e.clientX >= r.left && e.clientX <= r.right &&
+        e.clientY >= r.top  && e.clientY <= r.bottom) {
+      found = i;
+      break;
+    }
+  }
+
+  if (found !== litIdx) {
+    if (litIdx >= 0) ITEMS[litIdx].el.classList.remove('lit');
+    litIdx = found;
+    if (litIdx >= 0) ITEMS[litIdx].el.classList.add('lit');
+  }
+});
+
+/* ══ DETAIL ══ */
+const dvEl   = document.getElementById('dv');
+const dvVis  = document.getElementById('dvVis');
+const dvGenre= document.getElementById('dvGenre');
+const dvT    = document.getElementById('dvT');
+const dvSub  = document.getElementById('dvSub');
+const dvTags = document.getElementById('dvTags');
+const dvSN   = document.getElementById('dvSN');
+const dvSL   = document.getElementById('dvSL');
+const dvFill = document.getElementById('dvFill');
+const dvDesc = document.getElementById('dvDesc');
+const btnX   = document.getElementById('btn-x');
+
+function openDetail(i) {
+  const g = GAMES[i]; isDetailOpen = true;
+  dvVis.innerHTML = mkSVG(g, i, 800, 900);
+  dvGenre.textContent = g.g;
+  dvT.innerHTML = `${g.t1}<br><em>${g.t2}</em>`;
+  dvSub.textContent = g.sub;
+  dvTags.innerHTML = `<span class="dv-tag hi">${g.year}</span><span class="dv-tag">${g.pegi}</span>`
+    + g.tags.map(t=>`<span class="dv-tag">${t}</span>`).join('');
+  dvSN.innerHTML = `${g.score}<span>/100</span>`;
+  dvSL.textContent = g.score+'/100';
+  dvFill.style.width = '0%';
+  dvDesc.textContent = g.desc;
+  dvEl.classList.add('open');
+  requestAnimationFrame(() => { dvFill.style.width = g.score+'%'; });
+}
+
+btnX.addEventListener('click', () => {
+  isDetailOpen = false;
+  dvEl.classList.remove('open');
+  dvFill.style.width = '0%';
+});
+document.addEventListener('keydown', e => {
+  if (e.key==='Escape' && isDetailOpen) btnX.click();
+});
+</script>
+</body>
+</html>
