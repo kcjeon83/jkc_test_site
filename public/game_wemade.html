@@ -634,19 +634,20 @@ function loop() {
     : (isDrag ? 1 + intensity * 0.72 : 1);
   const heightSpread = isMobile ? 220 : 530;
 
-  // Wave center = 커서 위치 (track 좌표계)
-  const waveCenter = mouseX + txCur;
+  // #track padding — getItemCenters()는 패딩을 포함하지 않으므로 보정 필요
+  const TRACK_PAD = 496;
 
   const brightnessAmp = Math.min(speed / 9, 1);
   const centers = getItemCenters();
   ITEMS.forEach((it, idx) => {
-    const cardScreenX = centers[idx] - txCur; // card center in screen coords
+    // 패딩을 포함한 실제 화면상 카드 중심 X
+    const cardScreenX = TRACK_PAD + centers[idx] - txCur;
 
-    // tilt용: 화면 중심 기준 거리 (edge falloff에 사용)
-    const distFromVpCenter = centers[idx] - (txCur + window.innerWidth / 2);
+    // viewport 중심 기준 거리 (edge falloff용)
+    const distFromVpCenter = cardScreenX - window.innerWidth / 2;
 
-    // wave용: 커서 위치 기준 거리
-    const dist    = centers[idx] - waveCenter;
+    // 커서 기준 거리 (wave + tilt 공통)
+    const dist    = cardScreenX - mouseX;
     const absDist = Math.abs(dist);
 
     let targetRot = 0;
