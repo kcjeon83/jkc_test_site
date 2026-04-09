@@ -2,7 +2,7 @@ import img1 from "../assets/320x600_1.png";
 import img2 from "../assets/img2.jpg";
 
 export const GALLERY_ITEMS = [
-  { id: 1, src: img1, title: '25th\nThe Legacy', subtitle: '25년의 경의, 멈추지 않는 전설', link: '/game_wemade.html' },
+  { id: 1, src: img1, title: 'WEMADE CHUANQI IP', subtitle: '2022.04 ~ 2026 재직 중', link: '/game_wemade.html' },
   { id: 2, src: img2, title: 'MiR2 Bihwarok ver2', subtitle: '26년 미르가 나아갈 길' },
   { id: 3, src: 'https://images.unsplash.com/photo-1640841932394-7e135c0c6c3c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxzY3VscHR1cmUlMjBtb2Rlcm58ZW58MXx8fHwxNzczODEwMTcyfDA&ixlib=rb-4.1.0&q=80&w=1080', title: 'Modern Form', subtitle: 'Sculpture & Texture' },
   { id: 4, src: 'https://images.unsplash.com/photo-1647791770329-374795b33f8a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3Nzg4Nzd8MHwxfHNlYXJjaHwxfHxhYnN0cmFjdCUyMGxpZ2h0JTIwc2hhZG93fGVufDF8fHx8MTc3Mzc2ODkzMHww&ixlib=rb-4.1.0&q=80&w=1080', title: 'Lumière', subtitle: 'Abstract Shadows' },
