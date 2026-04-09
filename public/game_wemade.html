@@ -375,48 +375,20 @@ body.dragging { cursor: grabbing !important; }
 </div>
 
 <script>
-/* ══ DATA ══ */
-const GAMES = [
-  { g:'MIR 2',             t1:'25TH THE',  t2:'LEGACY',   sub:'25년의 경이, 멈추지 않는 전설', score:96, year:'2026.03', pegi:'18+', tags:[],                                    desc:'25년의 영광을 함께 새긴 위대한 용사들에게',                                                                                                                    pal:{bg:'#1b2a38',a:'#4a8fa8',b:'#9ac8dc',acc:'#d4a843'}, w:89,  h:320, detailUrl:'/detail_01.html' },
-  { g:'Tactical Shooter',  t1:'FRACTURE',  t2:'LINE',     sub:'Precision Over Power',            score:89, year:'2024', pegi:'16+', tags:['5v5','Competitive','Ranked'],           desc:'A hyper-tactical shooter where map geometry is your greatest weapon. Master 12 operators across ever-shifting asymmetrical arenas.',                                pal:{bg:'#1e1208',a:'#c25c2a',b:'#e8a060',acc:'#e8a060'}, w:89,  h:320 },
-  { g:'Puzzle',            t1:'STILL',     t2:'WATER',    sub:'Silence Has a Shape',             score:93, year:'2024', pegi:'7+',  tags:['Puzzle','Meditative','Indie'],           desc:'Manipulate reflections of a mirrored world to unlock passages between dimensions. A wordless poem rendered in 60fps tranquility.',                                    pal:{bg:'#162218',a:'#4a8c6a',b:'#80c8a0',acc:'#80c8a0'}, w:89,  h:320 },
-  { g:'Narrative RPG',     t1:'HOLLOW',    t2:'CROWN',    sub:'Every Throne Costs Something',    score:91, year:'2024', pegi:'12+', tags:['Story','Choice-Driven','Dark Fantasy'],  desc:'A branching political drama set in a decaying monarchy. Forge alliances, betray confidants, and decide what kind of ruler history will remember.',                   pal:{bg:'#1e1018',a:'#8c4a6a',b:'#c888a8',acc:'#c888a8'}, w:89,  h:320 },
-  { g:'Racing Sim',        t1:'APEX',      t2:'HOUR',     sub:'Born for the Last Corner',        score:85, year:'2024', pegi:'3+',  tags:['Racing','Simulation','60fps'],           desc:'Physics-first circuit racing with 200 licensed cars and 40 real-world tracks. Feel every surface change, every weight shift.',                                       pal:{bg:'#101620',a:'#3a5a8c',b:'#6898c8',acc:'#6898c8'}, w:89,  h:320 },
-  { g:'Survival Horror',   t1:'LAST',      t2:'PARISH',   sub:'God Left First',                  score:88, year:'2024', pegi:'18+', tags:['Horror','Survival','Atmospheric'],       desc:'A crumbling cathedral town sealed from the world. Ration resources, decode cryptic rituals, survive until the fog lifts — if it lifts.',                            pal:{bg:'#120c0c',a:'#6a3030',b:'#a86060',acc:'#a86060'}, w:89,  h:320 },
-  { g:'Deckbuilder',       t1:'GILDED',    t2:'CHAOS',    sub:'Stack the Odds, Break the Rules', score:94, year:'2024', pegi:'12+', tags:['Roguelike','Deckbuilder','Endless'],     desc:'Draft cards, forge relics, construct increasingly absurd combo engines across procedurally generated towers. No two runs share a ceiling.',                          pal:{bg:'#1a180c',a:'#8c7820',b:'#c8b040',acc:'#c8b040'}, w:89,  h:320 },
-  { g:'Platformer',        t1:'VELVET',    t2:'JUMP',     sub:'Momentum Is Everything',          score:90, year:'2024', pegi:'7+',  tags:['Platformer','Movement','Indie'],         desc:'A fluid action-platformer where movement history shapes the level. Leave velocity trails, rewind momentum, and sequence impossible chains.',                          pal:{bg:'#140e22',a:'#6a4a9c',b:'#a878d8',acc:'#a878d8'}, w:89,  h:320 },
-  { g:'City Builder',      t1:'MERIDIAN',  t2:'CITY',     sub:'Every District Tells a Story',    score:87, year:'2024', pegi:'3+',  tags:['City Builder','Strategy','Relaxing'],    desc:'Build a living metropolis across five eras of architecture. Balance culture, infrastructure, and citizen happiness in a beautifully rendered sandbox.',             pal:{bg:'#101c12',a:'#4a7858',b:'#80b890',acc:'#80b890'}, w:89,  h:320 },
-  { g:'Fighting',          t1:'IRON',      t2:'FORM',     sub:'The Body Is the Weapon',          score:86, year:'2024', pegi:'12+', tags:['Fighting','PvP','Tournament'],           desc:'Sixteen martial arts styles. One arena. Frame-data obsessed, built for competitors yet accessible to everyone — the deepest roster in the genre.',                 pal:{bg:'#181008',a:'#8c6030',b:'#c8a060',acc:'#c8a060'}, w:89,  h:320 },
-  { g:'Stealth',           t1:'PHANTOM',   t2:'WIRE',     sub:'Leave No Trace',                  score:92, year:'2024', pegi:'16+', tags:['Stealth','Cyber','Open World'],         desc:'Become a ghost operative in a surveillance state. Disable cameras, hack drones, and vanish without a trace through a paranoid cityscape.',                          pal:{bg:'#0e1820',a:'#2a6888',b:'#70b8d8',acc:'#70b8d8'}, w:89,  h:320 },
-  { g:'JRPG',              t1:'SILVER',    t2:'THREAD',   sub:'A Fate Woven in Stars',           score:90, year:'2024', pegi:'12+', tags:['JRPG','Turn-Based','Story'],            desc:'A sweeping Japanese RPG spanning three generations. Strategic turn-based combat, a gorgeous hand-painted world, and a story that earns every tear.',              pal:{bg:'#1c1424',a:'#8058a8',b:'#c098e8',acc:'#e0b8ff'}, w:89,  h:320 },
-  { g:'Metroidvania',      t1:'DEEP',      t2:'MARROW',   sub:'Descend. Discover. Die.',         score:91, year:'2024', pegi:'16+', tags:['Metroidvania','Exploration','Hardcore'], desc:'A precision platformer set inside a dying colossus. Every chamber conceals a secret; every death teaches you the anatomy of failure.',                               pal:{bg:'#181014',a:'#7a2848',b:'#c87898',acc:'#e898b8'}, w:89,  h:320 },
-  { g:'Space Strategy',    t1:'VOID',      t2:'SENATE',   sub:'Power Is the Only Currency',      score:88, year:'2024', pegi:'12+', tags:['Strategy','4X','Space'],                desc:'A grand-strategy game set in a crumbling interstellar republic. Forge coalitions, starve enemies with trade routes, and outlast empires through cunning.',         pal:{bg:'#0c1020',a:'#304888',b:'#7090d8',acc:'#90b8ff'}, w:89,  h:320 },
-  { g:'Rhythm Action',     t1:'PULSE',     t2:'BREAK',    sub:'Feel Every Beat',                 score:87, year:'2024', pegi:'7+',  tags:['Rhythm','Music','Arcade'],              desc:'A kinetic rhythm game where levels are built from the songs themselves. 400 tracks, real-time generation, infinite replayability.',                               pal:{bg:'#1a0c1e',a:'#9a2898',b:'#d878d8',acc:'#ff88ff'}, w:89,  h:320 },
-  { g:'Western RPG',       t1:'DUST',      t2:'GOSPEL',   sub:'Redemption Is Earned in Ash',     score:93, year:'2024', pegi:'18+', tags:['Western','RPG','Open World'],           desc:'A sun-bleached open world set in a collapsing frontier. Hunt bounties, broker peace, or burn it all down — the desert remembers everything.',                    pal:{bg:'#201408',a:'#a86828',b:'#e0b068',acc:'#f0c878'}, w:89,  h:320 },
-  { g:'Submarine Sim',     t1:'BLACK',     t2:'DEPTH',    sub:'The Ocean Holds No Mercy',        score:85, year:'2024', pegi:'16+', tags:['Simulation','Naval','Tense'],            desc:'Command a nuclear submarine on classified deep-sea missions. Manage oxygen, crew morale, and crushing pressure — one wrong call floods everything.',              pal:{bg:'#081418',a:'#1a6878',b:'#50a8c0',acc:'#70c8e0'}, w:89,  h:320 },
-  { g:'Horror Adventure',  t1:'PALE',      t2:'STATION',  sub:'There Is No Signal Here',         score:89, year:'2024', pegi:'18+', tags:['Horror','Narrative','Atmospheric'],     desc:'An abandoned Antarctic research station, a voice on a dead frequency, and a mystery that collapses the boundary between past and present.',                       pal:{bg:'#141820',a:'#3a4868',b:'#7888b8',acc:'#a0b0e0'}, w:89,  h:320 },
-  { g:'Extraction Shooter',t1:'WIRE',      t2:'GATE',     sub:'Extract or Die Trying',           score:84, year:'2024', pegi:'16+', tags:['Extraction','PvPvE','Online'],           desc:'Drop in, secure objectives, fight off AI and rival squads, extract alive. Every run is a calculated gamble where greed is the most dangerous enemy.',            pal:{bg:'#141010',a:'#783828',b:'#c07858',acc:'#e09878'}, w:89,  h:320 },
-  { g:'Cozy Farming',      t1:'SOFT',      t2:'SEASON',   sub:'Grow Something Beautiful',        score:88, year:'2024', pegi:'3+',  tags:['Farming','Cozy','Relaxing'],             desc:'A slow-paced farming RPG set in a village that shifts with every season. Cultivate rare crops, befriend quirky townsfolk, and restore the valley\'s lost magic.', pal:{bg:'#141c10',a:'#5a8840',b:'#98c878',acc:'#b8e898'}, w:89,  h:320 },
-  { g:'Naval Strategy',    t1:'IRON',      t2:'TIDE',     sub:'Command the Horizon',             score:86, year:'2024', pegi:'12+', tags:['Strategy','Naval','Historical'],        desc:'Command fleets across historically inspired naval campaigns. Manage supply lines, weather storms, and outmaneuver admirals in an age of sail and steel.',          pal:{bg:'#0c1420',a:'#284870',b:'#6090b8',acc:'#80b8e0'}, w:89,  h:320 },
-  { g:'Sci-Fi RPG',        t1:'NULL',      t2:'SIGNAL',   sub:'Between Worlds, No One Hears',    score:91, year:'2024', pegi:'16+', tags:['Sci-Fi','RPG','Narrative'],             desc:'A lone signal analyst uncovers a transmission predating the universe. An intimate, branching sci-fi RPG about the weight of forbidden knowledge.',                pal:{bg:'#101820',a:'#285888',b:'#60a8d8',acc:'#90d0ff'}, w:89,  h:320 },
-  { g:'Arena Shooter',     t1:'HEAT',      t2:'ROUND',    sub:'Every Second Is a Decision',      score:83, year:'2024', pegi:'16+', tags:['Arena','FPS','Competitive'],            desc:'A pure arena shooter stripped to its essentials. No abilities, no loadouts — just raw aim, movement, and the knowledge to read the room.',                      pal:{bg:'#1c1008',a:'#b06030',b:'#e89860',acc:'#f8c080'}, w:89,  h:320 },
-  { g:'Puzzle Platformer',  t1:'FOLD',     t2:'THEORY',   sub:'The World Is a Problem to Solve', score:92, year:'2024', pegi:'7+',  tags:['Puzzle','Platformer','Physics'],        desc:'Manipulate gravity, fold space, and invert logic to navigate a world that obeys no fixed rules. Every solution reveals a deeper question.',                      pal:{bg:'#181820',a:'#484888',b:'#8888c8',acc:'#b8b8ff'}, w:89,  h:320 },
-  { g:'Open World Horror',  t1:'GREY',     t2:'COUNTRY',  sub:'Something Lives in the Fog',      score:88, year:'2024', pegi:'18+', tags:['Horror','Open World','Survival'],       desc:'A vast, fog-covered rural expanse where the creatures know the land better than you do. Hunt, hide, and unravel the origin of the grey.',                         pal:{bg:'#141414',a:'#505050',b:'#909090',acc:'#c8c8c8'}, w:89,  h:320 },
-  { g:'Tactical RPG',      t1:'ORDER',     t2:'BREAK',    sub:'Plans Never Survive Contact',     score:90, year:'2024', pegi:'12+', tags:['TRPG','Tactics','Story'],               desc:'Grid-based tactical combat fused with deep character narrative. Every battle is a chess match; every loss shapes the story that follows.',                        pal:{bg:'#181410',a:'#886040',b:'#c8a070',acc:'#e8c890'}, w:89,  h:320 },
-  { g:'Climbing Sim',      t1:'BARE',      t2:'ROCK',     sub:'The Mountain Does Not Care',      score:87, year:'2024', pegi:'3+',  tags:['Simulation','Climbing','Relaxing'],     desc:'A meditative first-person climbing simulator on a 4000-metre peak. No HUD, no enemies — just your hands, the rock, and the consequences of poor decisions.',     pal:{bg:'#201c18',a:'#987858',b:'#c8a878',acc:'#e8c898'}, w:89,  h:320 },
-  { g:'Dungeon Crawler',   t1:'SEVENTH',   t2:'SEAL',     sub:'There Is Always One More Door',   score:89, year:'2024', pegi:'16+', tags:['Dungeon','Crawler','Loot'],             desc:'A punishing first-person dungeon crawler with hand-crafted labyrinths, cryptic lore, and loot that fundamentally rewrites your build every floor.',              pal:{bg:'#100c18',a:'#503870',b:'#9070b0',acc:'#c0a0e0'}, w:89,  h:320 },
-  { g:'Survival Crafting', t1:'LAST',      t2:'LIGHT',    sub:'Build Before Nightfall',          score:85, year:'2024', pegi:'12+', tags:['Survival','Crafting','Coop'],           desc:'Stranded on a world with a 14-hour night cycle. Gather, craft, fortify, and survive the things that come when the sun goes down.',                              pal:{bg:'#181c10',a:'#586830',b:'#98a860',acc:'#c8d890'}, w:89,  h:320 },
-  { g:'Mystery Visual Novel',t1:'WHEN',    t2:'SHE FELL', sub:'The Truth Arrives Late',          score:93, year:'2024', pegi:'16+', tags:['Visual Novel','Mystery','Branching'],   desc:'A dense mystery visual novel with 40+ endings. One woman. One apartment building. Six days before the fall. Everything is a clue you might have missed.',         pal:{bg:'#1c1018',a:'#784060',b:'#b87898',acc:'#e8a8c8'}, w:89,  h:320 },
-  { g:'Soulslike',          t1:'ASH',      t2:'COVENANT', sub:'Die. Learn. Die Again.',           score:94, year:'2024', pegi:'18+', tags:['Soulslike','Action','Hardcore'],        desc:'A brutal third-person action RPG set in a crumbling theocracy. Parry, riposte, and master the rhythm of punishment in a world that wants you dead.',              pal:{bg:'#18100c',a:'#904830',b:'#d09070',acc:'#f0b888'}, w:89,  h:320 },
-  { g:'Immersive Sim',      t1:'OPEN',     t2:'HAND',     sub:'Every Problem Has Ten Solutions',  score:92, year:'2024', pegi:'16+', tags:['Immersive Sim','Stealth','RPG'],        desc:'A systems-driven immersive sim set in a corporate arcology. Hack, persuade, fight, or ghost your way through a labyrinth of interconnected decisions.',           pal:{bg:'#101c20',a:'#306878',b:'#70b8c8',acc:'#90d8e8'}, w:89,  h:320 },
-  { g:'Survival Horror',    t1:'COLD',     t2:'MERCY',    sub:'The Ice Does Not Forgive',         score:87, year:'2024', pegi:'18+', tags:['Survival','Horror','Exploration'],      desc:'Stranded on a glacial archipelago with no radio and dwindling supplies. Something old lives beneath the permafrost, and it has been waiting.',                    pal:{bg:'#101820',a:'#305878',b:'#70a8c8',acc:'#a8d0e8'}, w:89,  h:320 },
-  { g:'Grand Strategy',     t1:'IRON',     t2:'CENTURY',  sub:'History Is Written by the Bold',   score:90, year:'2024', pegi:'12+', tags:['Grand Strategy','Historical','4X'],     desc:'Command a minor nation through a century of conflict and diplomacy. Every decade the world reshapes; only the most adaptable dynasties survive the long game.',    pal:{bg:'#1c1808',a:'#987828',b:'#d8b848',acc:'#f8d868'}, w:89,  h:320 },
-  { g:'Action Roguelite',   t1:'SURGE',    t2:'RUN',      sub:'Build Fast or Die Slow',           score:88, year:'2024', pegi:'12+', tags:['Roguelite','Action','Speedrun'],        desc:'A top-down roguelite where your build crystallizes in the first sixty seconds. Master the curve, push the meta, and clock the fastest run on the board.',          pal:{bg:'#1a0c08',a:'#c04828',b:'#f07848',acc:'#ff9858'}, w:89,  h:320 },
-  { g:'Psychological Horror',t1:'MIRROR',  t2:'SKIN',     sub:'You Are Not Who You Think',        score:91, year:'2024', pegi:'18+', tags:['Horror','Psychological','Narrative'],   desc:'A first-person psychological horror game with an unreliable narrator. The apartment changes when you are not looking. Nothing you remember is accurate.',          pal:{bg:'#181418',a:'#684868',b:'#b090b0',acc:'#d8b8d8'}, w:89,  h:320 },
-  { g:'Naval Roguelike',    t1:'DEAD',     t2:'WATER',    sub:'Sail Until You Cannot',            score:86, year:'2024', pegi:'12+', tags:['Roguelike','Naval','Strategy'],         desc:'Captain a cursed frigate through procedurally generated seas. Manage crew loyalty, weather supernatural storms, and choose which ports are worth the price.',      pal:{bg:'#0c1018',a:'#285070',b:'#6090b0',acc:'#80b8d8'}, w:89,  h:320 },
-  { g:'Sandbox Survival',   t1:'FIRST',    t2:'EMBER',    sub:'Light It and Let It Breathe',      score:85, year:'2024', pegi:'7+',  tags:['Sandbox','Survival','Crafting'],        desc:'A warmly lit survival sandbox set in a world recovering from catastrophe. Build shelter, nurture ecosystems, and help the land remember what green looks like.',   pal:{bg:'#201808',a:'#a06828',b:'#d8a848',acc:'#f0c870'}, w:89,  h:320 },
-  { g:'Puzzle Horror',      t1:'WRONG',    t2:'DOOR',     sub:'Some Rooms Should Stay Locked',    score:89, year:'2024', pegi:'18+', tags:['Puzzle','Horror','Escape'],             desc:'An escape-room horror game set across nine impossible rooms. Each puzzle solved opens a door to somewhere worse. The tenth room has no puzzle — just a choice.',   pal:{bg:'#100c10',a:'#602860',b:'#a060a0',acc:'#c880c8'}, w:89,  h:320 },
-];
+/* ══ DATA — games.json에서 불러옴 ══
+   수정 방법: /public/games.json 파일만 편집하면 됩니다.
+   GitHub 웹 에디터: https://github.com/<repo>/edit/main/public/games.json
+*/
+let GAMES = [];
+
+fetch('/games.json')
+  .then(r => r.json())
+  .then(function(data) {
+    GAMES = data;
+    buildItems();
+    loop();
+  })
+  .catch(function(e) { console.error('games.json 로드 실패:', e); });
 
 /* ══ SVG COVER ══ */
 function mkSVG(g, i, W, H){
@@ -484,6 +456,7 @@ function mkSVG(g, i, W, H){
 const track = document.getElementById('track');
 const ITEMS = [];
 
+function buildItems() {
 GAMES.forEach((g, i) => {
   const el = document.createElement('div');
   el.className = 'gi';
@@ -492,8 +465,8 @@ GAMES.forEach((g, i) => {
 
   const inner = document.createElement('div');
   inner.className = 'gi-inner';
-  if (i === 0) {
-    inner.style.cssText = 'background:url(/img1.jpg) center/cover no-repeat; width:100%; height:100%;';
+  if (g.img) {
+    inner.style.cssText = `background:url(${g.img}) center/cover no-repeat; width:100%; height:100%;`;
   } else {
     inner.innerHTML = mkSVG(g, i, g.w, g.h);
   }
@@ -546,6 +519,7 @@ GAMES.forEach((g, i) => {
     setWave(deg, sy) { springAnim(deg, sy); }
   });
 });
+}
 
 /* ══ HORIZONTAL DRAG ONLY ══ */
 let txTarget = 0, txCur = 0, txPrev = 0;
@@ -685,7 +659,6 @@ function loop() {
 
   requestAnimationFrame(loop);
 }
-loop();
 
 /* ══ CURSOR + JS HOVER ══ */
 // Touch highlight for mobile (touchstart = brief lit)
@@ -758,24 +731,21 @@ const dvEventImg = document.getElementById('dvEventImg');
 function openDetail(i) {
   const g = GAMES[i]; isDetailOpen = true;
   window.parent.postMessage('detail:open', '*');
-  if (i === 0) {
-    /* Whole panel scrolls → scrollbar at far right */
+  if (g.detailImg) {
     dvEl.style.overflowY = 'auto';
     dvEl.style.alignItems = 'start';
     dvEl.style.gridTemplateColumns = '70% 30%';
-    /* Left: event image, natural height */
     dvVis.style.overflowY = 'hidden';
     dvVis.style.height = 'auto';
     dvVis.style.minHeight = '100vh';
-    dvVis.innerHTML = `<img src="/mir2_25th.jpg" style="width:100%;height:auto;display:block;" alt="${g.t1}">`;
-    /* Right: text sticky so it stays in view while image scrolls */
+    dvVis.innerHTML = `<img src="${g.detailImg}" style="width:100%;height:auto;display:block;" alt="${g.t1}">`;
     dvEventImg.style.display = 'none';
     dvBody.style.position = 'sticky';
     dvBody.style.top = '0';
     dvBody.style.height = '100vh';
     dvBody.style.overflowY = 'hidden';
     dvBtnPlay.textContent = 'Page Now';
-    dvBtnPlay.onclick = () => window.open('https://mir2-event.mironline.co.kr/11101110001100101', '_blank');
+    dvBtnPlay.onclick = () => window.open(g.pageUrl || '#', '_blank');
   } else {
     dvEl.style.overflowY = '';
     dvEl.style.alignItems = '';
