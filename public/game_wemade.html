@@ -525,6 +525,7 @@ GAMES.forEach((g, i) => {
 let txTarget = 0, txCur = 0, txPrev = 0;
 let isDrag = false, dragSX = 0, dragTX0 = 0;
 let isDetailOpen = false;
+let mouseX = window.innerWidth / 2;
 
 function maxScroll() {
   let total = ITEMS.reduce((s,it) => s + it.baseW + 14, 0) - 14;
@@ -599,26 +600,37 @@ function loop() {
   const speed = Math.abs(vel);
   const intensity = Math.min(speed / 9, 1);
 
-  const maxAngle    = isMobile ? 0 : (isDrag ? 8 + intensity * 22 : 0);
-  const anglespread = window.innerWidth * 0.72;
+  // Velocity-driven drag lean: vel > 0 = scrolling right → cards lean right
+  const dragLean = isMobile ? 0 : clamp(-vel * 3.4, -34, 34);
+
   const maxScale    = isMobile
-    ? (isDrag ? 1 + intensity * 0.18 : 1)   // mobile: subtle only
-    : (isDrag ? 1 + intensity * 0.72 : 1);  // desktop: full volume
+    ? (isDrag ? 1 + intensity * 0.18 : 1)
+    : (isDrag ? 1 + intensity * 0.72 : 1);
   const heightSpread = isMobile ? 220 : 530;
 
-  // Wave brightness: cards in the wave zone brighten with their scale
-  // Use speed (which lingers after drag due to lerp) so brightness fades naturally
   const brightnessAmp = Math.min(speed / 9, 1);
   const centers = getItemCenters();
   ITEMS.forEach((it, idx) => {
+    const cardScreenX = centers[idx] - txCur; // card center in screen coords
     const dist    = centers[idx] - vpCenter;
     const absDist = Math.abs(dist);
 
-    // Rotation across wider area
-    const tA = Math.min(absDist / anglespread, 1);
-    const targetRot = (dist > 0 ? 1 : -1) * maxAngle * Math.sin(tA * Math.PI * 0.5);
+    let targetRot = 0;
+    if (!isMobile) {
+      // Drag lean: velocity-driven, slight falloff toward edges
+      const edgeFade = 1 - Math.min(absDist / (window.innerWidth * 0.75), 1) * 0.28;
+      const dragTilt = dragLean * edgeFade;
 
-    // Height: smooth raised cosine arch — center tallest, fades over ~5 cards
+      // Cursor tilt at rest: cards angle toward where cursor is
+      const dx = mouseX - cardScreenX;
+      const cursorTilt = clamp(dx / (window.innerWidth * 0.62), -1, 1) * 9;
+
+      // Blend: fast = drag lean dominates, still = cursor tilt dominates
+      const velFactor = clamp(Math.abs(vel) / 5, 0, 1);
+      targetRot = dragTilt * velFactor + cursorTilt * (1 - velFactor);
+    }
+
+    // Height: smooth raised cosine arch
     let targetScale = 1;
     let waveFactor = 0;
     if (absDist < heightSpread) {
@@ -683,6 +695,7 @@ const cDot = document.getElementById('cur-dot');
 let litIdx = -1;
 
 window.addEventListener('mousemove', e => {
+  mouseX = e.clientX;
   cDot.style.left = e.clientX + 'px';
   cDot.style.top  = e.clientY + 'px';
   cDot.style.opacity = '1';
