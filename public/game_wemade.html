@@ -534,25 +534,42 @@ function maxScroll() {
 function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
 
 /* pointer events — covers mouse + touch, setPointerCapture guarantees pointerup
-   even when released outside the window */
+   even when released outside the window.
+   클릭 vs 드래그 구분: 5px 이상 이동 시 드래그로 판정, 미만이면 카드 클릭으로 처리 */
 const trackWrap = document.getElementById('track-wrap');
-trackWrap.style.touchAction = 'none'; // prevent browser scroll hijack on touch
+trackWrap.style.touchAction = 'none';
+
+let pointerDownX = 0;
 
 trackWrap.addEventListener('pointerdown', e => {
   if (isDetailOpen) return;
-  if (e.pointerType === 'mouse' && e.button !== 0) return; // left-click only
+  if (e.pointerType === 'mouse' && e.button !== 0) return;
   trackWrap.setPointerCapture(e.pointerId);
-  isDrag = true; dragSX = e.pageX; dragTX0 = txTarget;
-  document.body.classList.add('dragging');
+  isDrag = false;
+  pointerDownX = e.pageX;
+  dragSX = e.pageX; dragTX0 = txTarget;
 });
 
 trackWrap.addEventListener('pointermove', e => {
-  if (!isDrag || isDetailOpen) return;
+  if (isDetailOpen) return;
+  if (!isDrag && Math.abs(e.pageX - pointerDownX) > 5) {
+    isDrag = true;
+    document.body.classList.add('dragging');
+  }
+  if (!isDrag) return;
   txTarget = clamp(dragTX0 - (e.pageX - dragSX), 0, maxScroll());
 });
 
 trackWrap.addEventListener('pointerup', e => {
   trackWrap.releasePointerCapture(e.pointerId);
+  if (!isDrag) {
+    // 드래그 없이 손 뗌 = 클릭 — 커서 아래 카드 찾아서 상세 열기
+    const card = document.elementFromPoint(e.clientX, e.clientY)?.closest('.gi');
+    if (card) {
+      const idx = ITEMS.findIndex(it => it.el === card);
+      if (idx >= 0) openDetail(idx);
+    }
+  }
   isDrag = false;
   document.body.classList.remove('dragging');
 });
