@@ -615,11 +615,10 @@ function loop() {
      Mobile: simplified (no rotateY, gentle scaleY only)
      Desktop: full 3D wave with speed-driven volume
   */
-  const vpCenter = txCur + window.innerWidth / 2;
   const speed = Math.abs(vel);
   const intensity = Math.min(speed / 9, 1);
 
-  // Velocity-driven drag lean: vel > 0 = scrolling right → cards lean right
+  // Velocity-driven drag lean
   const dragLean = isMobile ? 0 : clamp(-vel * 3.4, -34, 34);
 
   const maxScale    = isMobile
@@ -627,29 +626,34 @@ function loop() {
     : (isDrag ? 1 + intensity * 0.72 : 1);
   const heightSpread = isMobile ? 220 : 530;
 
+  // Wave center = 커서 위치 (track 좌표계)
+  const waveCenter = mouseX + txCur;
+
   const brightnessAmp = Math.min(speed / 9, 1);
   const centers = getItemCenters();
   ITEMS.forEach((it, idx) => {
     const cardScreenX = centers[idx] - txCur; // card center in screen coords
-    const dist    = centers[idx] - vpCenter;
+
+    // tilt용: 화면 중심 기준 거리 (edge falloff에 사용)
+    const distFromVpCenter = centers[idx] - (txCur + window.innerWidth / 2);
+
+    // wave용: 커서 위치 기준 거리
+    const dist    = centers[idx] - waveCenter;
     const absDist = Math.abs(dist);
 
     let targetRot = 0;
     if (!isMobile) {
-      // Drag lean: velocity-driven, slight falloff toward edges
-      const edgeFade = 1 - Math.min(absDist / (window.innerWidth * 0.75), 1) * 0.28;
+      const edgeFade = 1 - Math.min(Math.abs(distFromVpCenter) / (window.innerWidth * 0.75), 1) * 0.28;
       const dragTilt = dragLean * edgeFade;
 
-      // Cursor tilt at rest: cards angle toward where cursor is
       const dx = mouseX - cardScreenX;
       const cursorTilt = clamp(dx / (window.innerWidth * 0.62), -1, 1) * 9;
 
-      // Blend: fast = drag lean dominates, still = cursor tilt dominates
       const velFactor = clamp(Math.abs(vel) / 5, 0, 1);
       targetRot = dragTilt * velFactor + cursorTilt * (1 - velFactor);
     }
 
-    // Height: smooth raised cosine arch
+    // Height wave: 커서 위치에서 퍼져나가는 물결
     let targetScale = 1;
     let waveFactor = 0;
     if (absDist < heightSpread) {
