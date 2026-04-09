@@ -151,14 +151,9 @@ export function Carousel({ onSelect, active }: CarouselProps) {
             </div>
 
             {/* Subtle index / label below or inside */}
-            <div className="absolute -bottom-8 left-0 flex flex-col opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
+            <div className="absolute -bottom-16 left-0 flex flex-col opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
                 <span className="text-[#d4af37] text-lg font-bold tracking-widest uppercase" style={{ fontFamily: 'Pretendard, sans-serif' }}>{item.title}</span>
                 <span className="text-[#a0a0a0] text-xs tracking-widest uppercase" style={{ fontFamily: 'Pretendard, sans-serif' }}>{item.subtitle}</span>
-            </div>
-            
-            {/* Index number on side (bookshelf style detail) */}
-            <div className="absolute top-4 -right-10 rotate-90 origin-left text-[#666] font-sans text-xs tracking-[0.3em] opacity-50 font-bold">
-                NO. {String(i + 1).padStart(2, '0')}
             </div>
           </motion.div>
         ))}
