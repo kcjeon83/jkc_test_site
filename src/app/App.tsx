@@ -14,6 +14,18 @@ export default function App() {
       <div className="fixed top-6 left-6 md:top-10 md:left-10 font-serif text-[22px] md:text-[28px] font-semibold italic tracking-wide z-50 pointer-events-none text-[#f0f0f0] capitalize">
         jeonkicheol
       </div>
+
+      {/* Nav */}
+      <nav className="fixed top-6 right-6 md:top-10 md:right-10 flex items-center gap-6 md:gap-9 z-50">
+        {['Collection', 'Reviews', 'Releases'].map((label) => (
+          <span
+            key={label}
+            className="text-[12px] tracking-[2px] uppercase font-sans font-semibold text-[#f0f0f0]/50 hover:text-[#f0f0f0] transition-colors duration-300 cursor-pointer"
+          >
+            {label}
+          </span>
+        ))}
+      </nav>
       
       {/* Background Typography */}
       <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-full text-center text-[25vw] md:text-[18vw] font-extrabold text-white/5 whitespace-nowrap z-0 pointer-events-none tracking-tighter">
