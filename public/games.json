@@ -68,7 +68,8 @@
       "acc": "#80c8a0"
     },
     "w": 89,
-    "h": 320
+    "h": 320,
+    "img": "/card_thum03.jpg"
   },
   {
     "g": "Narrative RPG",
@@ -91,7 +92,8 @@
       "acc": "#c888a8"
     },
     "w": 89,
-    "h": 320
+    "h": 320,
+    "img": "/card_thum04.jpg"
   },
   {
     "g": "Racing Sim",
@@ -114,7 +116,8 @@
       "acc": "#6898c8"
     },
     "w": 89,
-    "h": 320
+    "h": 320,
+    "img": "/card_thum05.jpg"
   },
   {
     "g": "Survival Horror",
@@ -137,7 +140,8 @@
       "acc": "#a86060"
     },
     "w": 89,
-    "h": 320
+    "h": 320,
+    "img": "/card_thum06.jpg"
   },
   {
     "g": "Deckbuilder",
@@ -160,7 +164,8 @@
       "acc": "#c8b040"
     },
     "w": 89,
-    "h": 320
+    "h": 320,
+    "img": "/card_thum07.jpg"
   },
   {
     "g": "Platformer",
@@ -183,7 +188,8 @@
       "acc": "#a878d8"
     },
     "w": 89,
-    "h": 320
+    "h": 320,
+    "img": "/card_thum08.jpg"
   },
   {
     "g": "City Builder",
@@ -206,7 +212,8 @@
       "acc": "#80b890"
     },
     "w": 89,
-    "h": 320
+    "h": 320,
+    "img": "/card_thum09.jpg"
   },
   {
     "g": "Fighting",
@@ -229,7 +236,8 @@
       "acc": "#c8a060"
     },
     "w": 89,
-    "h": 320
+    "h": 320,
+    "img": "/card_thum10.jpg"
   },
   {
     "g": "Stealth",
@@ -252,7 +260,8 @@
       "acc": "#70b8d8"
     },
     "w": 89,
-    "h": 320
+    "h": 320,
+    "img": "/card_thum11.jpg"
   },
   {
     "g": "JRPG",
@@ -275,7 +284,8 @@
       "acc": "#e0b8ff"
     },
     "w": 89,
-    "h": 320
+    "h": 320,
+    "img": "/card_thum12.jpg"
   },
   {
     "g": "Metroidvania",
