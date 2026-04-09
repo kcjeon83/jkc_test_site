@@ -1,5 +1,5 @@
 import img1 from "../assets/img1.jpg";
-import img2 from "../assets/img2.jpg";
+import img2 from "../assets/320x600_1.png";
 
 export const GALLERY_ITEMS = [
   { id: 1, src: img1, title: '25th\nThe Legacy', subtitle: '25년의 경의, 멈추지 않는 전설', link: '/game_wemade.html' },

@@ -139,7 +139,10 @@ export function Carousel({ onSelect, active }: CarouselProps) {
             }}
           >
             {/* Image container */}
-            <div className="w-full h-full overflow-hidden relative shadow-2xl">
+            <div className="w-full h-full overflow-hidden relative shadow-2xl transition-colors duration-700" style={{ backgroundColor: '#3b3b3b' }}
+              onMouseEnter={e => (e.currentTarget.style.backgroundColor = '#ffffff')}
+              onMouseLeave={e => (e.currentTarget.style.backgroundColor = '#3b3b3b')}
+            >
               <motion.div
                 className="w-full h-full bg-cover bg-center transition-all duration-700 ease-out grayscale group-hover:grayscale-0 group-hover:scale-105"
                 style={{ backgroundImage: `url(${item.src})` }}
