@@ -94,7 +94,7 @@ body::after {
 #track {
   display:flex; align-items:center;
   gap:14px;
-  padding:0 48px;
+  padding:0 248px;
   will-change:transform;
   transform-style:preserve-3d;
 }
@@ -529,7 +529,7 @@ let mouseX = window.innerWidth / 2;
 
 function maxScroll() {
   let total = ITEMS.reduce((s,it) => s + it.baseW + 14, 0) - 14;
-  return Math.max(0, total - window.innerWidth + 96);
+  return Math.max(0, total - window.innerWidth + 496);
 }
 function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
 
