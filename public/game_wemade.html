@@ -540,18 +540,20 @@ const trackWrap = document.getElementById('track-wrap');
 trackWrap.style.touchAction = 'none';
 
 let pointerDownX = 0;
+let isPointerDown = false;
 
 trackWrap.addEventListener('pointerdown', e => {
   if (isDetailOpen) return;
   if (e.pointerType === 'mouse' && e.button !== 0) return;
   trackWrap.setPointerCapture(e.pointerId);
+  isPointerDown = true;
   isDrag = false;
   pointerDownX = e.pageX;
   dragSX = e.pageX; dragTX0 = txTarget;
 });
 
 trackWrap.addEventListener('pointermove', e => {
-  if (isDetailOpen) return;
+  if (!isPointerDown || isDetailOpen) return;
   if (!isDrag && Math.abs(e.pageX - pointerDownX) > 5) {
     isDrag = true;
     document.body.classList.add('dragging');
@@ -562,7 +564,7 @@ trackWrap.addEventListener('pointermove', e => {
 
 trackWrap.addEventListener('pointerup', e => {
   trackWrap.releasePointerCapture(e.pointerId);
-  if (!isDrag) {
+  if (isPointerDown && !isDrag) {
     // 드래그 없이 손 뗌 = 클릭 — 커서 아래 카드 찾아서 상세 열기
     const card = document.elementFromPoint(e.clientX, e.clientY)?.closest('.gi');
     if (card) {
@@ -570,12 +572,14 @@ trackWrap.addEventListener('pointerup', e => {
       if (idx >= 0) openDetail(idx);
     }
   }
+  isPointerDown = false;
   isDrag = false;
   document.body.classList.remove('dragging');
 });
 
 trackWrap.addEventListener('pointercancel', e => {
   trackWrap.releasePointerCapture(e.pointerId);
+  isPointerDown = false;
   isDrag = false;
   document.body.classList.remove('dragging');
 });
