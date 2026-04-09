@@ -121,13 +121,7 @@ export function Carousel({ onSelect, active }: CarouselProps) {
             className="relative shrink-0 cursor-pointer group w-[65vw] h-[65vh] md:w-[320px] md:h-[600px] origin-bottom"
             style={{ skewX }}
             onClick={() => {
-              if (active && !isDragging.current) {
-                if (item.link) {
-                  window.open(item.link, '_blank');
-                } else {
-                  onSelect(item);
-                }
-              }
+              if (active && !isDragging.current) onSelect(item);
             }}
             onMouseEnter={() => {
               const cursor = document.getElementById('custom-cursor');
