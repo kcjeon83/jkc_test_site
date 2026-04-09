@@ -6,7 +6,8 @@
 <title>VAULT — Game Archive</title>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,800;1,400;1,800&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,800;1,400;1,800&family=Syne:wght@400;700;800&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <style>
 /* ─── RESET & BASE ─── */
 :root {
@@ -25,7 +26,7 @@ html, body {
   font-family:var(--sans);
   overflow:hidden;
   -webkit-font-smoothing:antialiased;
-  cursor:none;
+  cursor:default;
 }
 
 /* ─── GRAIN ─── */
@@ -36,13 +37,7 @@ body::after {
 }
 
 /* ─── CURSOR ─── */
-#cur-dot {
-  position:fixed; z-index:9999; pointer-events:none;
-  width:7px; height:7px; border-radius:50%;
-  background:var(--ink);
-  transform:translate(-50%,-50%);
-  transition:opacity .2s;
-}
+#cur-dot { display:none; }
 
 
 /* ─── HEADER ─── */
@@ -193,7 +188,7 @@ body.dragging .gi.lit svg { filter:saturate(.65) brightness(.82); }
 #dv.open .dv-vis svg { transform:scale(1); }
 .dv-vis::after {
   content:''; position:absolute; inset:0; z-index:2;
-  background:linear-gradient(90deg,transparent 40%,var(--bg) 100%);
+  background:linear-gradient(90deg,transparent 72%,var(--bg) 92%);
 }
 .dv-vis::before {
   content:''; position:absolute; inset:0; z-index:3; pointer-events:none;
@@ -201,14 +196,14 @@ body.dragging .gi.lit svg { filter:saturate(.65) brightness(.82); }
 }
 .dv-body {
   display:flex; flex-direction:column; justify-content:center;
-  padding:80px 60px 80px 44px;
+  padding:80px 60px 80px 4px;
   opacity:0; transform:translateX(22px);
   transition:opacity .6s ease .44s, transform .6s ease .44s;
 }
 #dv.open .dv-body { opacity:1; transform:translateX(0); }
 
 .dv-eyebrow {
-  font-family:var(--sans); font-size:9px; font-weight:700;
+  font-family:'Pretendard', var(--sans); font-size:9px; font-weight:700;
   letter-spacing:.26em; text-transform:uppercase; color:var(--gold);
   display:flex; align-items:center; gap:14px; margin-bottom:14px;
 }
@@ -250,10 +245,20 @@ body.dragging .gi.lit svg { filter:saturate(.65) brightness(.82); }
   width:0%; transition:width 1.1s cubic-bezier(.165,.84,.44,1) .75s;
 }
 .dv-desc {
-  font-family:var(--serif); font-size:14px; line-height:1.82;
+  font-family:'Pretendard', var(--serif); font-size:14px; line-height:1.82;
   color:var(--ink2); max-width:320px; margin-bottom:36px;
 }
 .dv-cta { display:flex; gap:12px; }
+.dv-back {
+  position:fixed; top:24px; right:24px; z-index:600;
+  display:flex; align-items:center; gap:8px;
+  font-family:'Inter', ui-sans-serif, system-ui, sans-serif; font-size:12px; font-weight:600;
+  letter-spacing:2px; text-transform:uppercase; color:var(--ink);
+  cursor:none;
+  transition:color .22s;
+  background:none; border:none; padding:8px;
+}
+.dv-back:hover { color:#d4af37; }
 .btn-p {
   padding:13px 32px; background:var(--ink); color:var(--bg);
   font-family:var(--sans); font-size:9px; font-weight:700;
@@ -269,18 +274,10 @@ body.dragging .gi.lit svg { filter:saturate(.65) brightness(.82); }
   cursor:none; transition:border-color .22s, color .22s;
 }
 .btn-w:hover { border-color:var(--ink); color:var(--ink); }
-#btn-x {
-  position:fixed; top:26px; right:42px; z-index:600;
-  padding:10px 18px; border:1px solid var(--ink3); color:var(--ink2);
-  font-family:var(--sans); font-size:9px; font-weight:400;
-  letter-spacing:.2em; text-transform:uppercase;
-  opacity:0; pointer-events:none; cursor:none;
-  transition:opacity .4s ease 1s, color .22s, border-color .22s;
-}
-#btn-x:hover { color:var(--ink); border-color:var(--ink); }
-#dv.open ~ #btn-x { opacity:1; pointer-events:all; }
 
-body.dragging, body.dragging * { cursor: none !important; }
+body.dragging { cursor: grabbing !important; }
+.gi { cursor: pointer; }
+.btn-p, .btn-w, .dv-back { cursor: pointer; }
 @keyframes fu { from{opacity:0;transform:translateY(16px)} to{opacity:1;transform:none} }
 #hd  { animation:fu .9s cubic-bezier(.22,1,.36,1) both; }
 #ft  { animation:fu .9s cubic-bezier(.22,1,.36,1) .15s both; }
@@ -324,7 +321,7 @@ body.dragging, body.dragging * { cursor: none !important; }
   .dv-desc { font-size:13px; margin-bottom:26px; }
 
   /* close button */
-  #btn-x { top:14px; right:16px; padding:8px 12px; font-size:8px; }
+
 }
 
 /* very small phones */
@@ -355,7 +352,9 @@ body.dragging, body.dragging * { cursor: none !important; }
 <!-- Detail -->
 <div id="dv">
   <div class="dv-vis" id="dvVis"></div>
-  <div class="dv-body">
+  <div class="dv-body" id="dvBody">
+    <button class="dv-back" id="dvBack">CLOSE ✕</button>
+    <img id="dvEventImg" src="" alt="" style="display:none;width:100%;height:auto;margin-bottom:32px;flex-shrink:0;">
     <div class="dv-eyebrow" id="dvGenre">Genre</div>
     <div class="dv-t" id="dvT">T</div>
     <div class="dv-sub" id="dvSub">S</div>
@@ -369,17 +368,16 @@ body.dragging, body.dragging * { cursor: none !important; }
     </div>
     <p class="dv-desc" id="dvDesc"></p>
     <div class="dv-cta">
-      <button class="btn-p">▶ Play Now</button>
+      <button class="btn-p" id="dvBtnPlay">▶ Play Now</button>
       <button class="btn-w">+ Wishlist</button>
     </div>
   </div>
 </div>
-<div id="btn-x">✕  Close</div>
 
 <script>
 /* ══ DATA ══ */
 const GAMES = [
-  { g:'Open World RPG',    t1:'ELYSIAN',   t2:'ATLAS',    sub:'A World Without Edges',           score:96, year:'2024', pegi:'18+', tags:['Open World','Narrative','100+ hrs'],   desc:'Traverse a mythological continent where every valley hides a forgotten civilization. Your choices reshape empires, topple gods, and rewrite history.',               pal:{bg:'#1b2a38',a:'#4a8fa8',b:'#9ac8dc',acc:'#d4a843'}, w:89,  h:320 },
+  { g:'MIR 2',             t1:'25TH THE',  t2:'LEGACY',   sub:'25년의 경이, 멈추지 않는 전설', score:96, year:'2026.03', pegi:'18+', tags:[],                                    desc:'25년의 영광을 함께 새긴 위대한 용사들에게',                                                                                                                    pal:{bg:'#1b2a38',a:'#4a8fa8',b:'#9ac8dc',acc:'#d4a843'}, w:89,  h:320, detailUrl:'/detail_01.html' },
   { g:'Tactical Shooter',  t1:'FRACTURE',  t2:'LINE',     sub:'Precision Over Power',            score:89, year:'2024', pegi:'16+', tags:['5v5','Competitive','Ranked'],           desc:'A hyper-tactical shooter where map geometry is your greatest weapon. Master 12 operators across ever-shifting asymmetrical arenas.',                                pal:{bg:'#1e1208',a:'#c25c2a',b:'#e8a060',acc:'#e8a060'}, w:89,  h:320 },
   { g:'Puzzle',            t1:'STILL',     t2:'WATER',    sub:'Silence Has a Shape',             score:93, year:'2024', pegi:'7+',  tags:['Puzzle','Meditative','Indie'],           desc:'Manipulate reflections of a mirrored world to unlock passages between dimensions. A wordless poem rendered in 60fps tranquility.',                                    pal:{bg:'#162218',a:'#4a8c6a',b:'#80c8a0',acc:'#80c8a0'}, w:89,  h:320 },
   { g:'Narrative RPG',     t1:'HOLLOW',    t2:'CROWN',    sub:'Every Throne Costs Something',    score:91, year:'2024', pegi:'12+', tags:['Story','Choice-Driven','Dark Fantasy'],  desc:'A branching political drama set in a decaying monarchy. Forge alliances, betray confidants, and decide what kind of ruler history will remember.',                   pal:{bg:'#1e1018',a:'#8c4a6a',b:'#c888a8',acc:'#c888a8'}, w:89,  h:320 },
@@ -494,7 +492,11 @@ GAMES.forEach((g, i) => {
 
   const inner = document.createElement('div');
   inner.className = 'gi-inner';
-  inner.innerHTML = mkSVG(g, i, g.w, g.h);
+  if (i === 0) {
+    inner.style.cssText = 'background:url(/img1.jpg) center/cover no-repeat; width:100%; height:100%;';
+  } else {
+    inner.innerHTML = mkSVG(g, i, g.w, g.h);
+  }
 
   const num = document.createElement('div');
   num.className = 'gi-num';
@@ -511,7 +513,9 @@ GAMES.forEach((g, i) => {
   el.appendChild(info);
   track.appendChild(el);
 
-  el.addEventListener('click', () => openDetail(i));
+  el.addEventListener('click', () => {
+    openDetail(i);
+  });
 
   // Combined rotateY + scaleY spring
   let rotY = 0, rotVY = 0;
@@ -652,12 +656,15 @@ function loop() {
     it.setWave(targetRot, targetScale);
 
     // Brighten SVG proportional to wave intensity — skip if card is hovered
-    if (!it.el.classList.contains('lit')) {
-      const sat = 0.65 + brightnessAmp * waveFactor * 1.55;
-      const bri = 0.82 + brightnessAmp * waveFactor * 1.08;
-      it.el.querySelector('svg').style.filter = `saturate(${sat}) brightness(${bri})`;
-    } else {
-      it.el.querySelector('svg').style.filter = '';
+    const svgEl = it.el.querySelector('svg');
+    if (svgEl) {
+      if (!it.el.classList.contains('lit')) {
+        const sat = 0.65 + brightnessAmp * waveFactor * 1.55;
+        const bri = 0.82 + brightnessAmp * waveFactor * 1.08;
+        svgEl.style.filter = `saturate(${sat}) brightness(${bri})`;
+      } else {
+        svgEl.style.filter = '';
+      }
     }
   });
 
@@ -738,11 +745,53 @@ const dvSN   = document.getElementById('dvSN');
 const dvSL   = document.getElementById('dvSL');
 const dvFill = document.getElementById('dvFill');
 const dvDesc = document.getElementById('dvDesc');
-const btnX   = document.getElementById('btn-x');
+function closeDetail() {
+  isDetailOpen = false;
+  dvEl.classList.remove('open');
+  dvFill.style.width = '0%';
+  window.parent.postMessage('detail:close', '*');
+}
 
+const dvBtnPlay  = document.getElementById('dvBtnPlay');
+const dvBody     = document.getElementById('dvBody');
+const dvEventImg = document.getElementById('dvEventImg');
 function openDetail(i) {
   const g = GAMES[i]; isDetailOpen = true;
-  dvVis.innerHTML = mkSVG(g, i, 800, 900);
+  window.parent.postMessage('detail:open', '*');
+  if (i === 0) {
+    /* Whole panel scrolls → scrollbar at far right */
+    dvEl.style.overflowY = 'auto';
+    dvEl.style.alignItems = 'start';
+    dvEl.style.gridTemplateColumns = '70% 30%';
+    /* Left: event image, natural height */
+    dvVis.style.overflowY = 'hidden';
+    dvVis.style.height = 'auto';
+    dvVis.style.minHeight = '100vh';
+    dvVis.innerHTML = `<img src="/mir2_25th.jpg" style="width:100%;height:auto;display:block;" alt="${g.t1}">`;
+    /* Right: text sticky so it stays in view while image scrolls */
+    dvEventImg.style.display = 'none';
+    dvBody.style.position = 'sticky';
+    dvBody.style.top = '0';
+    dvBody.style.height = '100vh';
+    dvBody.style.overflowY = 'hidden';
+    dvBtnPlay.textContent = 'Page Now';
+    dvBtnPlay.onclick = () => window.open('https://mir2-event.mironline.co.kr/11101110001100101', '_blank');
+  } else {
+    dvEl.style.overflowY = '';
+    dvEl.style.alignItems = '';
+    dvEl.style.gridTemplateColumns = '';
+    dvVis.style.overflowY = 'hidden';
+    dvVis.style.height = '';
+    dvVis.style.minHeight = '';
+    dvVis.innerHTML = mkSVG(g, i, 800, 900);
+    dvEventImg.style.display = 'none';
+    dvBody.style.position = '';
+    dvBody.style.top = '';
+    dvBody.style.height = '';
+    dvBody.style.overflowY = '';
+    dvBtnPlay.textContent = '▶ Play Now';
+    dvBtnPlay.onclick = null;
+  }
   dvGenre.textContent = g.g;
   dvT.innerHTML = `${g.t1}<br><em>${g.t2}</em>`;
   dvSub.textContent = g.sub;
@@ -756,13 +805,9 @@ function openDetail(i) {
   requestAnimationFrame(() => { dvFill.style.width = g.score+'%'; });
 }
 
-btnX.addEventListener('click', () => {
-  isDetailOpen = false;
-  dvEl.classList.remove('open');
-  dvFill.style.width = '0%';
-});
+document.getElementById('dvBack').addEventListener('click', closeDetail);
 document.addEventListener('keydown', e => {
-  if (e.key==='Escape' && isDetailOpen) btnX.click();
+  if (e.key==='Escape' && isDetailOpen) closeDetail();
 });
 </script>
 </body>

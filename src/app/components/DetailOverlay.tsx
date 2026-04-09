@@ -1,5 +1,6 @@
 import { motion, AnimatePresence } from 'motion/react';
 import { X, ArrowRight } from 'lucide-react';
+import { useState, useEffect } from 'react';
 
 interface DetailOverlayProps {
   item: { id: number; src: string; title: string; subtitle?: string; link?: string } | null;
@@ -7,6 +8,22 @@ interface DetailOverlayProps {
 }
 
 export function DetailOverlay({ item, onClose }: DetailOverlayProps) {
+  const [iframeDetailOpen, setIframeDetailOpen] = useState(false);
+
+  useEffect(() => {
+    if (!item?.link) return;
+    const handler = (e: MessageEvent) => {
+      if (e.data === 'detail:open') setIframeDetailOpen(true);
+      if (e.data === 'detail:close') setIframeDetailOpen(false);
+    };
+    window.addEventListener('message', handler);
+    return () => window.removeEventListener('message', handler);
+  }, [item]);
+
+  useEffect(() => {
+    if (!item) setIframeDetailOpen(false);
+  }, [item]);
+
   return (
     <AnimatePresence>
       {item && (
@@ -85,17 +102,21 @@ export function DetailOverlay({ item, onClose }: DetailOverlayProps) {
             </>
           )}
 
-          <motion.button
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
-            transition={{ duration: 0.5, delay: 1 }}
-            onClick={onClose}
-            className="absolute top-6 right-6 md:top-12 md:right-12 flex items-center gap-2 text-[12px] tracking-[2px] z-[101] cursor-pointer p-2 transition-colors uppercase font-sans font-semibold"
-            style={{ color: item.link ? '#f0ebe0' : '#1a1a1a' }}
-          >
-            CLOSE <X size={16} />
-          </motion.button>
+          {!iframeDetailOpen && (
+            <motion.button
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              transition={{ duration: 0.5, delay: 1 }}
+              onClick={onClose}
+              className="absolute top-6 right-6 md:top-12 md:right-12 flex items-center gap-2 text-[12px] tracking-[2px] z-[101] cursor-pointer p-2 transition-colors uppercase font-sans font-semibold"
+              style={{ color: item.link ? '#f0ebe0' : '#1a1a1a' }}
+              onMouseEnter={e => (e.currentTarget.style.color = '#d4af37')}
+              onMouseLeave={e => (e.currentTarget.style.color = item.link ? '#f0ebe0' : '#1a1a1a')}
+            >
+              CLOSE <X size={16} />
+            </motion.button>
+          )}
         </motion.div>
       )}
     </AnimatePresence>
