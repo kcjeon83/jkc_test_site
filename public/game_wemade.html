@@ -120,11 +120,17 @@ body::after {
   transition:filter .15s linear;
   filter:saturate(.65) brightness(.82);
 }
-/* hover: brighten */
+/* hover: brighten (SVG 카드) */
 .gi.lit svg { filter:saturate(2.2) brightness(1.9); }
-/* wave-active: brighten proportional to wave (set via JS style) */
+/* hover: brighten (이미지 카드) */
+.gi-inner.bg-img {
+  transition:filter .15s linear;
+  filter:saturate(.65) brightness(.82);
+}
+.gi.lit .gi-inner.bg-img { filter:saturate(2.2) brightness(1.9); }
 /* dragging suppresses hover lit */
 body.dragging .gi.lit svg { filter:saturate(.65) brightness(.82); }
+body.dragging .gi.lit .gi-inner.bg-img { filter:saturate(.65) brightness(.82); }
 
 /* text overlay — hidden */
 .gi-info { display:none; }
@@ -466,6 +472,7 @@ GAMES.forEach((g, i) => {
   const inner = document.createElement('div');
   inner.className = 'gi-inner';
   if (g.img) {
+    inner.className = 'gi-inner bg-img';
     inner.style.cssText = `background:url(${g.img}) center/cover no-repeat; width:100%; height:100%;`;
   } else {
     inner.innerHTML = mkSVG(g, i, g.w, g.h);
