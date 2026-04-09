@@ -94,7 +94,7 @@ body::after {
 #track {
   display:flex; align-items:center;
   gap:14px;
-  padding:0 248px;
+  padding:0 496px;
   will-change:transform;
   transform-style:preserve-3d;
 }
@@ -529,42 +529,36 @@ let mouseX = window.innerWidth / 2;
 
 function maxScroll() {
   let total = ITEMS.reduce((s,it) => s + it.baseW + 14, 0) - 14;
-  return Math.max(0, total - window.innerWidth + 496);
+  return Math.max(0, total - window.innerWidth + 992);
 }
 function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
 
-window.addEventListener('mousedown', e => {
+/* pointer events — covers mouse + touch, setPointerCapture guarantees pointerup
+   even when released outside the window */
+const trackWrap = document.getElementById('track-wrap');
+trackWrap.style.touchAction = 'none'; // prevent browser scroll hijack on touch
+
+trackWrap.addEventListener('pointerdown', e => {
   if (isDetailOpen) return;
+  if (e.pointerType === 'mouse' && e.button !== 0) return; // left-click only
+  trackWrap.setPointerCapture(e.pointerId);
   isDrag = true; dragSX = e.pageX; dragTX0 = txTarget;
   document.body.classList.add('dragging');
 });
-window.addEventListener('mousemove', e => {
-  if (e.buttons === 0 && isDrag) {
-    isDrag = false;
-    document.body.classList.remove('dragging');
-  }
+
+trackWrap.addEventListener('pointermove', e => {
   if (!isDrag || isDetailOpen) return;
   txTarget = clamp(dragTX0 - (e.pageX - dragSX), 0, maxScroll());
 });
-window.addEventListener('mouseup', () => {
-  isDrag = false;
-  document.body.classList.remove('dragging');
-});
-window.addEventListener('mouseleave', () => {
+
+trackWrap.addEventListener('pointerup', e => {
+  trackWrap.releasePointerCapture(e.pointerId);
   isDrag = false;
   document.body.classList.remove('dragging');
 });
 
-window.addEventListener('touchstart', e => {
-  if (isDetailOpen) return;
-  isDrag=true; dragSX=e.touches[0].pageX; dragTX0=txTarget;
-  document.body.classList.add('dragging');
-}, {passive:true});
-window.addEventListener('touchmove', e => {
-  if (!isDrag||isDetailOpen) return;
-  txTarget = clamp(dragTX0-(e.touches[0].pageX-dragSX), 0, maxScroll());
-}, {passive:true});
-window.addEventListener('touchend', () => {
+trackWrap.addEventListener('pointercancel', e => {
+  trackWrap.releasePointerCapture(e.pointerId);
   isDrag = false;
   document.body.classList.remove('dragging');
 });
