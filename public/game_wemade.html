@@ -560,6 +560,7 @@ trackWrap.addEventListener('pointerdown', e => {
 });
 
 trackWrap.addEventListener('pointermove', e => {
+  mouseX = e.clientX; // 드래그 중에도 커서 위치 항상 갱신
   if (!isPointerDown || isDetailOpen) return;
   if (!isDrag && Math.abs(e.pageX - pointerDownX) > 5) {
     isDrag = true;
