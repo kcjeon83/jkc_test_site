@@ -560,10 +560,12 @@ trackWrap.addEventListener('pointerdown', e => {
 });
 
 trackWrap.addEventListener('pointermove', e => {
-  mouseX = e.clientX; // 드래그 중에도 커서 위치 항상 갱신
+  mouseX = e.clientX;
   if (!isPointerDown || isDetailOpen) return;
   if (!isDrag && Math.abs(e.pageX - pointerDownX) > 12) {
     isDrag = true;
+    // 드래그 시작 시 lit 상태 초기화 — 드래그 중 실수 클릭 방지
+    if (litIdx >= 0) { ITEMS[litIdx].el.classList.remove('lit'); litIdx = -1; }
     document.body.classList.add('dragging');
   }
   if (!isDrag) return;
@@ -572,12 +574,17 @@ trackWrap.addEventListener('pointermove', e => {
 
 trackWrap.addEventListener('pointerup', e => {
   trackWrap.releasePointerCapture(e.pointerId);
-  if (isPointerDown && !isDrag) {
-    // 드래그 없이 손 뗌 = 클릭 — 커서 아래 카드 찾아서 상세 열기
-    const card = document.elementFromPoint(e.clientX, e.clientY)?.closest('.gi');
-    if (card) {
-      const idx = ITEMS.findIndex(it => it.el === card);
-      if (idx >= 0) openDetail(idx);
+  if (isPointerDown) {
+    // lit 카드가 있으면 클릭으로 처리 (호버 상태 = 마우스)
+    if (litIdx >= 0) {
+      openDetail(litIdx);
+    } else if (!isDrag) {
+      // 터치 등 호버 없는 경우 — elementFromPoint 폴백
+      const card = document.elementFromPoint(e.clientX, e.clientY)?.closest('.gi');
+      if (card) {
+        const idx = ITEMS.findIndex(it => it.el === card);
+        if (idx >= 0) openDetail(idx);
+      }
     }
   }
   isPointerDown = false;
