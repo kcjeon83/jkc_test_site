@@ -539,6 +539,10 @@ window.addEventListener('mousedown', e => {
   document.body.classList.add('dragging');
 });
 window.addEventListener('mousemove', e => {
+  if (e.buttons === 0 && isDrag) {
+    isDrag = false;
+    document.body.classList.remove('dragging');
+  }
   if (!isDrag || isDetailOpen) return;
   txTarget = clamp(dragTX0 - (e.pageX - dragSX), 0, maxScroll());
 });
