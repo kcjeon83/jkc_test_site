@@ -1,0 +1,337 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FUNPLE WORKS — Portfolio Archive</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,800;1,400;1,800&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
+<style>
+:root {
+  --bg:    #0c0906;
+  --ink:   #f5ece0;
+  --ink2:  rgba(245,236,224,.38);
+  --ink3:  rgba(245,236,224,.08);
+  --gold:  #e8692a;
+  --serif: 'EB Garamond', serif;
+  --sans:  'Syne', sans-serif;
+  --pre:   'Pretendard', sans-serif;
+}
+*, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
+html, body {
+  width:100%; height:100%;
+  background:var(--bg); color:var(--ink);
+  font-family:var(--sans);
+  overflow:hidden;
+  -webkit-font-smoothing:antialiased;
+  cursor:default;
+}
+
+/* ─── GRAIN ─── */
+body::after {
+  content:''; position:fixed; inset:0; pointer-events:none; z-index:9990;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='250' height='250' filter='url(%23n)' opacity='.055'/%3E%3C/svg%3E");
+  opacity:.5;
+}
+
+/* ─── HEADER ─── */
+#hd {
+  position:fixed; top:0; left:0; right:0; z-index:200;
+  display:flex; align-items:flex-end; justify-content:space-between;
+  padding:30px 48px 20px;
+}
+.logo {
+  font-family:var(--serif); font-size:22px; font-weight:800;
+  letter-spacing:.1em;
+}
+.logo-tag {
+  font-family:var(--sans); font-size:9px; font-weight:400;
+  letter-spacing:.26em; color:var(--ink2); text-transform:uppercase;
+  margin-left:14px;
+}
+
+/* ─── BG WORD ─── */
+#bgw {
+  position:fixed; bottom:-4vw; left:-1vw; z-index:0;
+  font-family:var(--serif); font-style:italic; font-weight:800;
+  font-size:26vw; color:rgba(232,105,42,.03);
+  line-height:1; letter-spacing:-.02em; pointer-events:none;
+  white-space:nowrap; user-select:none;
+}
+
+/* ─── GUIDE ─── */
+#guide {
+  position:fixed; top:50%; left:50%; z-index:10;
+  transform:translate(-50%, -50%);
+  display:flex; flex-direction:column; align-items:center; gap:10px;
+  opacity:.45; pointer-events:none;
+  transition:opacity .4s;
+}
+#guide.hidden { opacity:0; }
+#guide span {
+  font-family:var(--sans); font-size:9px; letter-spacing:.22em;
+  text-transform:uppercase; color:var(--ink);
+}
+#guide-line { width:1px; height:30px; background:var(--ink); }
+
+/* ─── TRACK WRAP ─── */
+#track-wrap {
+  position:fixed; inset:0; z-index:10;
+  display:flex; align-items:center;
+  overflow:hidden;
+  padding-top:80px;
+  padding-bottom:70px;
+  touch-action:none;
+}
+#track {
+  display:flex; align-items:center;
+  gap:14px;
+  padding:0 35vw;
+  will-change:transform;
+}
+
+/* ─── CARD ─── */
+.gi {
+  flex:0 0 auto;
+  position:relative;
+  width:220px; height:293px;
+  overflow:hidden;
+  cursor:pointer;
+  will-change:transform;
+}
+.gi-inner {
+  width:100%; height:100%;
+  position:relative; overflow:hidden;
+}
+.gi-bg {
+  width:100%; height:100%;
+  transition:filter .15s linear;
+  filter:saturate(.55) brightness(.75);
+}
+.gi:hover .gi-bg { filter:saturate(1.4) brightness(1.1); }
+
+/* accent bar — bottom */
+.gi::after {
+  content:''; position:absolute;
+  bottom:0; left:0; right:0;
+  height:2px;
+  background:var(--gold);
+  transform:scaleX(0);
+  transform-origin:left;
+  transition:transform .35s cubic-bezier(.165,.84,.44,1);
+  z-index:3;
+}
+.gi:hover::after { transform:scaleX(1); }
+
+/* overlay */
+.gi-overlay {
+  position:absolute; inset:0;
+  background:linear-gradient(to top, rgba(12,9,6,.95) 0%, rgba(12,9,6,.1) 50%, transparent 100%);
+  z-index:1;
+}
+
+/* info */
+.gi-info {
+  position:absolute; bottom:0; left:0; right:0;
+  padding:16px 14px;
+  z-index:2;
+  opacity:0; transform:translateY(5px);
+  transition:opacity .2s ease, transform .2s ease;
+}
+.gi:hover .gi-info { opacity:1; transform:translateY(0); }
+.gi-title {
+  font-family:var(--serif); font-size:13px; font-weight:800;
+  font-style:italic; color:var(--ink); line-height:1.2; margin-bottom:3px;
+}
+.gi-sub {
+  font-family:var(--pre); font-size:8px; letter-spacing:.12em;
+  text-transform:uppercase; color:var(--ink2);
+}
+
+/* ─── FOOTER ─── */
+#ft {
+  position:fixed; bottom:0; left:0; right:0; z-index:200;
+  display:flex; align-items:center; justify-content:space-between;
+  padding:16px 48px;
+  border-top:1px solid var(--ink3);
+}
+.ft-hint {
+  font-family:var(--sans); font-size:9px;
+  letter-spacing:.22em; text-transform:uppercase; color:var(--ink2);
+  display:flex; align-items:center; gap:12px;
+}
+.ft-hint::before { content:''; width:28px; height:1px; background:var(--ink3); }
+.ft-prog {
+  flex:1; max-width:320px; margin:0 40px;
+  height:1px; background:var(--ink3); position:relative;
+}
+.ft-prog-fill {
+  position:absolute; top:0; left:0; height:100%;
+  background:var(--gold); transition:width .1s linear;
+  width:0%;
+}
+.ft-count {
+  font-family:var(--serif); font-style:italic; font-size:13px;
+  color:var(--ink2); letter-spacing:.04em;
+}
+.ft-count em { color:var(--ink); font-style:normal; font-weight:800; }
+
+@media(max-width:768px) {
+  #hd { padding:14px 18px 10px; }
+  .logo { font-size:16px; }
+  .logo-tag { font-size:8px; }
+  #bgw { font-size:38vw; }
+  #track { gap:8px; padding:0 20px; }
+  .gi { width:52vw; height:69.3vw; }
+  #ft { padding:10px 18px; }
+  .ft-prog { display:none; }
+}
+</style>
+</head>
+<body>
+
+<div id="bgw">FUNPLE</div>
+
+<header id="hd">
+  <div class="logo">FUNPLE WORKS <span class="logo-tag">Archive / 2015-2017</span></div>
+</header>
+
+<div id="guide">
+  <span>Drag or Scroll</span>
+  <div id="guide-line"></div>
+</div>
+
+<div id="track-wrap" id="trackWrap">
+  <div id="track"></div>
+</div>
+
+<footer id="ft">
+  <div class="ft-hint">Drag to explore</div>
+  <div class="ft-prog"><div class="ft-prog-fill" id="progFill"></div></div>
+  <div class="ft-count">No. <em id="ftNum">01</em> of 20</div>
+</footer>
+
+<script>
+const PROJECTS = [
+  { title:'Pocket Knights 2',   sub:'Main Lobby UI',          bg:'linear-gradient(160deg,#2a1208 0%,#4a2010 55%,#0c0906 100%)' },
+  { title:'Pocket Knights 2',   sub:'Battle HUD',             bg:'linear-gradient(160deg,#1a0a18 0%,#3a1530 55%,#0c0906 100%)' },
+  { title:'Pocket Knights 2',   sub:'Shop System',            bg:'linear-gradient(160deg,#0a1a12 0%,#153025 55%,#0c0906 100%)' },
+  { title:'Pocket Knights 2',   sub:'Event Lobby',            bg:'linear-gradient(160deg,#1a1208 0%,#352010 55%,#0c0906 100%)' },
+  { title:'Pocket Knights 2',   sub:'Character Select',       bg:'linear-gradient(160deg,#0a0a1a 0%,#151535 55%,#0c0906 100%)' },
+  { title:'Pocket Knights 2',   sub:'Guild Interface',        bg:'linear-gradient(160deg,#1a0a0a 0%,#351515 55%,#0c0906 100%)' },
+  { title:'Pocket Knights 2',   sub:'World Map',              bg:'linear-gradient(160deg,#081818 0%,#103030 55%,#0c0906 100%)' },
+  { title:'Pocket Knights 2',   sub:'Achievement UI',         bg:'linear-gradient(160deg,#181008 0%,#2e1e10 55%,#0c0906 100%)' },
+  { title:'Pocket Knights 2',   sub:'Daily Mission',          bg:'linear-gradient(160deg,#0e1808 0%,#1a2e10 55%,#0c0906 100%)' },
+  { title:'Pocket Knights 2',   sub:'Ranking Board',          bg:'linear-gradient(160deg,#180818 0%,#2e1030 55%,#0c0906 100%)' },
+  { title:'Pocket Knights 2',   sub:'Inventory Grid',         bg:'linear-gradient(160deg,#08180e 0%,#103020 55%,#0c0906 100%)' },
+  { title:'Pocket Knights 2',   sub:'Notification UI',        bg:'linear-gradient(160deg,#1a1008 0%,#302010 55%,#0c0906 100%)' },
+  { title:'Pocket Knights 2',   sub:'Tutorial Flow',          bg:'linear-gradient(160deg,#081018 0%,#101e30 55%,#0c0906 100%)' },
+  { title:'Pocket Knights 2',   sub:'Loading Screen',         bg:'linear-gradient(160deg,#100818 0%,#201530 55%,#0c0906 100%)' },
+  { title:'Pocket Knights 2',   sub:'Settings Panel',         bg:'linear-gradient(160deg,#181508 0%,#2e2510 55%,#0c0906 100%)' },
+  { title:'Pocket Knights 2',   sub:'Profile Page',           bg:'linear-gradient(160deg,#0a1a10 0%,#143020 55%,#0c0906 100%)' },
+  { title:'Pocket Knights 2',   sub:'Push Notification',      bg:'linear-gradient(160deg,#1a0e08 0%,#2e1c10 55%,#0c0906 100%)' },
+  { title:'Pocket Knights 2',   sub:'Social System',          bg:'linear-gradient(160deg,#080a18 0%,#101530 55%,#0c0906 100%)' },
+  { title:'Pocket Knights 2',   sub:'Season Pass UI',         bg:'linear-gradient(160deg,#181008 0%,#2e2010 55%,#0c0906 100%)' },
+  { title:'Pocket Knights 2',   sub:'Main Menu Rework',       bg:'linear-gradient(160deg,#2a1208 0%,#4a2010 55%,#0c0906 100%)' },
+];
+
+/* ── DOM ── */
+const track    = document.getElementById('track');
+const progFill = document.getElementById('progFill');
+const ftNum    = document.getElementById('ftNum');
+const guide    = document.getElementById('guide');
+
+/* ── BUILD CARDS ── */
+PROJECTS.forEach(function(p, i) {
+  const gi = document.createElement('div');
+  gi.className = 'gi';
+  gi.innerHTML = `
+    <div class="gi-inner">
+      <div class="gi-bg" style="background:${p.bg};width:100%;height:100%;"></div>
+    </div>
+    <div class="gi-overlay"></div>
+    <div class="gi-info">
+      <div class="gi-title">${p.title}</div>
+      <div class="gi-sub">${p.sub}</div>
+    </div>
+  `;
+  track.appendChild(gi);
+});
+
+const cards = track.querySelectorAll('.gi');
+
+/* ── SCROLL STATE ── */
+let curX = 0, tarX = 0;
+let velX = 0, prevX = 0;
+let isDragging = false, startX = 0, startTar = 0;
+
+function getMax() {
+  const vw = window.innerWidth;
+  const cardW = vw > 768 ? 220 : vw * 0.52;
+  const gap   = vw > 768 ? 14  : 8;
+  const total = PROJECTS.length * (cardW + gap) - gap;
+  const pad   = vw > 768 ? vw * 0.35 : 20;
+  return Math.max(0, total - vw + pad * 2);
+}
+
+function clamp(v, min, max) { return Math.min(Math.max(v, min), max); }
+
+/* ── POINTER DRAG ── */
+const wrap = document.getElementById('track-wrap');
+wrap.addEventListener('pointerdown', function(e) {
+  isDragging = true; startX = e.clientX; startTar = tarX;
+  guide.classList.add('hidden');
+  wrap.setPointerCapture(e.pointerId);
+});
+wrap.addEventListener('pointermove', function(e) {
+  if (!isDragging) return;
+  const dx = e.clientX - startX;
+  tarX = clamp(startTar + dx, -getMax(), 0);
+});
+wrap.addEventListener('pointerup',    stopDrag);
+wrap.addEventListener('pointercancel',stopDrag);
+function stopDrag() { isDragging = false; }
+
+/* ── WHEEL ── */
+wrap.addEventListener('wheel', function(e) {
+  e.preventDefault();
+  tarX = clamp(tarX - e.deltaY * 1.2 - e.deltaX * 1.2, -getMax(), 0);
+  guide.classList.add('hidden');
+}, { passive:false });
+
+/* ── RAF LOOP ── */
+function lerp(a, b, t) { return a + (b - a) * t; }
+
+(function loop() {
+  requestAnimationFrame(loop);
+
+  curX = lerp(curX, tarX, 0.1);
+  velX = curX - prevX;
+  prevX = curX;
+
+  const skew = clamp(velX * 0.6, -12, 12);
+  track.style.transform = `translateX(${curX}px)`;
+
+  cards.forEach(function(c) {
+    c.style.transform = `skewX(${skew}deg)`;
+  });
+
+  /* progress */
+  const max = getMax();
+  const prog = max > 0 ? (-curX / max) * 100 : 0;
+  progFill.style.width = prog + '%';
+
+  /* active card number */
+  const vw = window.innerWidth;
+  const cardW = vw > 768 ? 220 : vw * 0.52;
+  const gap   = vw > 768 ? 14  : 8;
+  const pad   = vw > 768 ? vw * 0.35 : 20;
+  const idx   = Math.round((-curX + vw / 2 - pad) / (cardW + gap));
+  const num   = clamp(idx + 1, 1, PROJECTS.length);
+  ftNum.textContent = String(num).padStart(2, '0');
+})();
+</script>
+</body>
+</html>
