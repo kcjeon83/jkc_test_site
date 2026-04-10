@@ -124,43 +124,28 @@ body::before {
   position:absolute; inset:0;
   background:linear-gradient(to top, rgba(14,12,9,.95) 0%, rgba(14,12,9,.2) 50%, transparent 100%);
 }
-.card-num {
-  position:absolute; top:16px; left:18px;
-  font-family:var(--sans); font-size:9px; letter-spacing:.22em;
-  color:rgba(240,232,216,.35); font-weight:400;
-  transition:color .3s;
-}
-.card:hover .card-num { color:var(--acc2); }
-
 .card-info {
   position:absolute; bottom:0; left:0; right:0;
-  padding:20px 18px;
+  padding:16px 14px;
+  opacity:0;
   transform:translateY(6px);
-  transition:transform .4s cubic-bezier(.165,.84,.44,1);
+  transition:opacity .2s ease, transform .2s ease;
 }
-.card:hover .card-info { transform:translateY(0); }
+.card:hover .card-info { opacity:1; transform:translateY(0); }
 
+.card-num {
+  font-family:var(--sans); font-size:8px; letter-spacing:.22em;
+  color:var(--acc2); font-weight:400;
+  margin-bottom:4px;
+}
 .card-title {
-  font-family:var(--serif); font-size:15px; font-weight:800;
+  font-family:var(--serif); font-size:14px; font-weight:800;
   font-style:italic; line-height:1.2;
-  color:var(--ink); margin-bottom:6px;
-  letter-spacing:.02em;
+  color:var(--ink); margin-bottom:4px;
 }
 .card-sub {
-  font-family:var(--pre); font-size:10px; font-weight:400;
-  color:var(--ink2); letter-spacing:.12em; text-transform:uppercase;
-  margin-bottom:10px;
-}
-.card-tags {
-  display:flex; flex-wrap:wrap; gap:4px;
-  opacity:0; transform:translateY(4px);
-  transition:opacity .35s .1s, transform .35s .1s;
-}
-.card:hover .card-tags { opacity:1; transform:translateY(0); }
-.tag {
-  font-family:var(--sans); font-size:8px; letter-spacing:.16em;
-  text-transform:uppercase; color:var(--acc2);
-  border:1px solid rgba(232,160,96,.3); padding:3px 7px;
+  font-family:var(--pre); font-size:9px; font-weight:400;
+  color:var(--ink2); letter-spacing:.1em; text-transform:uppercase;
 }
 
 /* wide 클래스 사용 안 함 — 모든 카드 동일 크기 */
@@ -274,13 +259,10 @@ PROJECTS.forEach(function(p) {
     <div class="card-inner">
       <div class="card-bg">${p.bg.startsWith('url(') ? `<img src="${p.bg.slice(4,-1)}" alt="${p.title}">` : `<div style="width:100%;height:100%;background:${p.bg}"></div>`}</div>
       <div class="card-overlay"></div>
-      <div class="card-num">No. ${p.num}</div>
       <div class="card-info">
+        <div class="card-num">No. ${p.num}</div>
         <div class="card-title">${p.title}</div>
         <div class="card-sub">${p.sub}</div>
-        <div class="card-tags">
-          ${p.tags.map(t => `<span class="tag">${t}</span>`).join('')}
-        </div>
       </div>
     </div>
   `;
