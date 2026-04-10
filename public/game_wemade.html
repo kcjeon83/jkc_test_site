@@ -521,15 +521,11 @@ GAMES.forEach((g, i) => {
 });
 }
 
-/* ══ HORIZONTAL DRAG ══ */
+/* ══ HORIZONTAL DRAG ONLY ══ */
 let txTarget = 0, txCur = 0, txPrev = 0;
-let isDrag = false;
+let isDrag = false, dragSX = 0, dragTX0 = 0;
 let isDetailOpen = false;
 let mouseX = window.innerWidth / 2;
-
-/* press 순간의 txCur(화면 위치)와 pageX를 저장 — 매 드래그마다 갱신 */
-let pressX = 0, pressTxCur = 0;
-let isPointerDown = false;
 
 function maxScroll() {
   let total = ITEMS.reduce((s,it) => s + it.baseW + 14, 0) - 14;
@@ -537,8 +533,14 @@ function maxScroll() {
 }
 function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
 
+/* pointer events — covers mouse + touch, setPointerCapture guarantees pointerup
+   even when released outside the window.
+   클릭 vs 드래그 구분: 5px 이상 이동 시 드래그로 판정, 미만이면 카드 클릭으로 처리 */
 const trackWrap = document.getElementById('track-wrap');
 trackWrap.style.touchAction = 'none';
+
+let pointerDownX = 0;
+let isPointerDown = false;
 
 trackWrap.addEventListener('pointerdown', e => {
   if (isDetailOpen) return;
@@ -546,22 +548,22 @@ trackWrap.addEventListener('pointerdown', e => {
   trackWrap.setPointerCapture(e.pointerId);
   isPointerDown = true;
   isDrag = false;
-  pressX      = e.pageX;
-  pressTxCur  = txCur;   /* 현재 화면 위치를 기준으로 저장 */
+  pointerDownX = e.pageX;
+  txTarget = txCur;          // lerp 목표를 현재 시각 위치로 리셋
+  dragSX = e.pageX; dragTX0 = txCur;
 });
 
 trackWrap.addEventListener('pointermove', e => {
   mouseX = e.clientX;
   if (!isPointerDown || isDetailOpen) return;
-  const moved = e.pageX - pressX;
-  if (!isDrag && Math.abs(moved) > 4) {
+  if (!isDrag && Math.abs(e.pageX - pointerDownX) > 4) {
     isDrag = true;
+    // 드래그 시작 시 lit 상태 초기화 — 드래그 중 실수 클릭 방지
     if (litIdx >= 0) { ITEMS[litIdx].el.classList.remove('lit'); litIdx = -1; }
     document.body.classList.add('dragging');
   }
   if (!isDrag) return;
-  /* pressTxCur - moved : 왼쪽 드래그 → moved<0 → txTarget 증가 → 카드 왼쪽 이동 */
-  txTarget = clamp(pressTxCur - moved, 0, maxScroll());
+  txTarget = clamp(dragTX0 - (e.pageX - dragSX), 0, maxScroll());
 });
 
 trackWrap.addEventListener('pointerup', e => {
