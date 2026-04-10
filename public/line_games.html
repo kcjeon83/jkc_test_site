@@ -10,10 +10,10 @@
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <style>
 :root {
-  --bg:    #080c08;
-  --ink:   #edf5e0;
-  --ink2:  rgba(237,245,224,.38);
-  --ink3:  rgba(237,245,224,.08);
+  --bg:    #080808;
+  --ink:   #f0f0f0;
+  --ink2:  rgba(240,240,240,.38);
+  --ink3:  rgba(240,240,240,.1);
   --acc:   #b8ff57;
   --serif: 'EB Garamond', serif;
   --sans:  'Syne', sans-serif;
@@ -24,193 +24,214 @@ html, body {
   width:100%; height:100%;
   background:var(--bg); color:var(--ink);
   font-family:var(--sans);
+  overflow:hidden;
   -webkit-font-smoothing:antialiased;
 }
-body { overflow-x:hidden; }
 
-body::before {
+body::after {
   content:''; position:fixed; inset:0; pointer-events:none; z-index:9990;
-  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='250' height='250' filter='url(%23n)' opacity='.055'/%3E%3C/svg%3E");
-  opacity:.45;
+  background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='250' height='250'%3E%3Cfilter id='n'%3E%3CfeTurbulence baseFrequency='.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='250' height='250' filter='url(%23n)' opacity='.04'/%3E%3C/svg%3E");
+  opacity:.5;
 }
 
 /* ─── HEADER ─── */
 #hd {
-  position:sticky; top:0; left:0; right:0; z-index:200;
+  position:fixed; top:0; left:0; right:0; z-index:200;
   display:flex; align-items:flex-end; justify-content:space-between;
   padding:28px 48px 18px;
-  background:rgba(8,12,8,.88);
-  backdrop-filter:blur(16px);
 }
 .logo { font-family:var(--serif); font-size:22px; font-weight:800; letter-spacing:.08em; }
 .logo-tag {
-  font-family:var(--sans); font-size:9px; font-weight:400;
-  letter-spacing:.26em; color:var(--ink2); text-transform:uppercase; margin-left:14px;
+  font-family:var(--sans); font-size:9px; letter-spacing:.26em;
+  color:var(--ink2); text-transform:uppercase; margin-left:14px;
 }
 
-#bgw {
-  position:fixed; bottom:-4vw; right:-1vw; z-index:0;
-  font-family:var(--serif); font-style:italic; font-weight:800;
-  font-size:22vw; color:rgba(184,255,87,.018);
-  line-height:1; pointer-events:none; white-space:nowrap; user-select:none;
+/* ─── TRACK WRAP ─── */
+#track-wrap {
+  position:fixed; inset:0; z-index:10;
+  display:flex; align-items:center;
+  overflow:hidden;
+  padding-top:90px;
+  padding-bottom:80px;
+  touch-action:none;
 }
 
-/* ─── MAIN ─── */
-#main { position:relative; z-index:1; padding:40px 10vw 100px; }
+#track {
+  display:flex;
+  align-items:center;
+  gap:40px;
+  padding:0 10vw;
+  will-change:transform;
+  height:100%;
+}
 
-/* ─── GRID ─── */
-.grid {
-  display:grid;
-  grid-template-columns:repeat(4,1fr);
-  grid-auto-rows:calc((80vw - 42px) / 4);
+/* ─── ITEM (wrapper) ─── */
+.item {
+  flex:0 0 auto;
+  display:flex;
+  flex-direction:column;
   gap:14px;
 }
+
+/* vertical stagger variants */
+.item.top    { align-self:flex-start; margin-top:20px; }
+.item.mid    { align-self:center; }
+.item.bottom { align-self:flex-end; margin-bottom:20px; }
 
 /* ─── CARD ─── */
 .card {
   position:relative;
   overflow:hidden;
-  cursor:pointer;
-  background:#0f140f;
-  outline:1px solid rgba(237,245,224,.06);
+  background:#111;
+  flex-shrink:0;
+  transition:filter .15s linear;
+  filter:saturate(.5) brightness(.75);
 }
-.card.large { grid-column:span 2; grid-row:span 2; }
+.card:hover { filter:saturate(1.2) brightness(1.05); }
 
-.card-bg {
-  position:absolute; inset:0;
-  transition:filter .15s linear, transform .6s cubic-bezier(.165,.84,.44,1);
-  filter:saturate(.55) brightness(.78);
-}
-.card-bg img { width:100%; height:100%; object-fit:cover; display:block; }
-.card:hover .card-bg {
-  filter:saturate(1.3) brightness(1.1);
-  transform:scale(1.04);
+.card img,
+.card-bg-div {
+  width:100%; height:100%;
+  object-fit:cover; display:block;
 }
 
-.card-overlay {
-  position:absolute; inset:0;
-  background:linear-gradient(to top, rgba(8,12,8,.9) 0%, rgba(8,12,8,.1) 55%, transparent 100%);
-  transition:opacity .25s;
-}
-.card:hover .card-overlay { opacity:.6; }
+/* card sizes */
+.item.sm .card  { width:180px; height:240px; }
+.item.md .card  { width:220px; height:340px; }
+.item.lg .card  { width:260px; height:420px; }
+.item.xl .card  { width:300px; height:480px; }
 
-/* accent line — left side */
-.card::before {
-  content:''; position:absolute;
-  top:0; left:0; bottom:0;
-  width:2px;
-  background:var(--acc);
-  transform:scaleY(0);
-  transform-origin:top;
-  transition:transform .35s cubic-bezier(.165,.84,.44,1);
-  z-index:3;
+/* ─── ITEM NUMBER ─── */
+.item-num {
+  font-family:var(--sans); font-size:10px; font-weight:400;
+  letter-spacing:.2em; color:var(--ink2);
 }
-.card:hover::before { transform:scaleY(1); }
 
-.card-info {
-  position:absolute; bottom:0; left:0; right:0;
-  padding:20px 18px;
-  z-index:2;
-  opacity:0; transform:translateY(6px);
-  transition:opacity .2s ease, transform .2s ease;
+/* ─── ITEM TITLE ─── */
+.item-title {
+  font-family:var(--sans); font-size:10px; font-weight:700;
+  letter-spacing:.18em; text-transform:uppercase; color:var(--ink);
 }
-.card:hover .card-info { opacity:1; transform:translateY(0); }
-
-.card-title {
-  font-family:var(--serif); font-weight:800; font-style:italic;
-  color:var(--ink); line-height:1.2; margin-bottom:4px;
-  font-size:14px;
-}
-.card.large .card-title { font-size:20px; }
-
-.card-sub {
+.item-sub {
   font-family:var(--pre); font-size:9px; font-weight:400;
-  color:var(--ink2); letter-spacing:.12em; text-transform:uppercase;
+  letter-spacing:.1em; color:var(--ink2); margin-top:-8px;
+  text-transform:uppercase;
 }
 
 /* ─── FOOTER ─── */
 #ft {
   position:fixed; bottom:0; left:0; right:0; z-index:200;
-  display:flex; align-items:center; justify-content:space-between;
-  padding:14px 48px;
-  background:rgba(8,12,8,.88); backdrop-filter:blur(12px);
+  display:flex; align-items:center;
+  padding:16px 48px;
 }
-.ft-label { font-family:var(--sans); font-size:9px; letter-spacing:.22em; text-transform:uppercase; color:var(--ink2); }
-.ft-line { flex:1; height:1px; background:var(--ink3); margin:0 24px; }
-.ft-period { font-family:var(--serif); font-style:italic; font-size:13px; color:var(--ink2); }
+.ft-prog {
+  flex:1; height:1px; background:var(--ink3); position:relative;
+}
+.ft-prog-fill {
+  position:absolute; top:0; left:0; height:100%;
+  background:var(--ink); transition:width .1s linear; width:0%;
+}
 
-@media(max-width:1100px) {
-  .grid { grid-template-columns:repeat(3,1fr); grid-auto-rows:calc((80vw - 28px)/3); }
-}
 @media(max-width:768px) {
-  #hd { padding:20px 24px 14px; }
-  #main { padding:24px 4vw 80px; }
-  .grid { grid-template-columns:repeat(2,1fr); grid-auto-rows:calc((92vw - 14px)/2); gap:8px; }
-  .logo { font-size:17px; }
+  #hd { padding:16px 20px 12px; }
+  .logo { font-size:16px; }
   .logo-tag { display:none; }
-  #ft { padding:12px 24px; }
+  #track { gap:20px; padding:0 5vw; }
+  .item.sm .card  { width:130px; height:175px; }
+  .item.md .card  { width:160px; height:250px; }
+  .item.lg .card  { width:190px; height:310px; }
+  .item.xl .card  { width:220px; height:360px; }
+  #ft { padding:12px 20px; }
 }
 </style>
 </head>
 <body>
 
-<div id="bgw">LINE</div>
-
 <header id="hd">
   <div class="logo">LINE GAMES <span class="logo-tag">Archive / 2018-2021</span></div>
 </header>
 
-<main id="main">
-  <div class="grid" id="grid"></div>
-</main>
+<div id="track-wrap">
+  <div id="track"></div>
+</div>
 
 <footer id="ft">
-  <div class="ft-label">Line Games Corp.</div>
-  <div class="ft-line"></div>
-  <div class="ft-period">2018 — 2021</div>
+  <div class="ft-prog"><div class="ft-prog-fill" id="progFill"></div></div>
 </footer>
 
 <script>
 const PROJECTS = [
-  { title:'Rangers of Oblivion',  sub:'Main UI System',       large:true,  bg:'linear-gradient(160deg,#0d2010 0%,#1a3a18 60%,#080c08 100%)' },
-  { title:'Ace Fishing',          sub:'Lobby Redesign',       large:false, bg:'linear-gradient(160deg,#0a1a20 0%,#122a30 60%,#080c08 100%)' },
-  { title:'YULGANG Mobile',       sub:'HUD Design',           large:false, bg:'linear-gradient(160deg,#1a150a 0%,#2e2410 60%,#080c08 100%)' },
-  { title:'Seven Knights',        sub:'Battle UI',            large:false, bg:'linear-gradient(160deg,#180a0a 0%,#2e1010 60%,#080c08 100%)' },
-  { title:'Battlefield Mobile',   sub:'In-Game Interface',    large:false, bg:'linear-gradient(160deg,#0a1018 0%,#121e2e 60%,#080c08 100%)' },
-  { title:'Versus: REALM WAR',    sub:'Strategy UI',          large:false, bg:'linear-gradient(160deg,#100a18 0%,#1e1230 60%,#080c08 100%)' },
-  { title:'Echo of Combat',       sub:'Character Select',     large:false, bg:'linear-gradient(160deg,#0d2010 0%,#183520 60%,#080c08 100%)' },
-  { title:'Blade & Soul',         sub:'Shop System',          large:true,  bg:'linear-gradient(160deg,#1a100a 0%,#2e1e12 60%,#080c08 100%)' },
-  { title:'Icarus M',             sub:'World Map UI',         large:false, bg:'linear-gradient(160deg,#0a1a12 0%,#143025 60%,#080c08 100%)' },
-  { title:'Line Rangers',         sub:'Event Lobby',          large:false, bg:'linear-gradient(160deg,#18180a 0%,#2e2e10 60%,#080c08 100%)' },
-  { title:'Kingdom Defense',      sub:'Tower UI',             large:false, bg:'linear-gradient(160deg,#0a1818 0%,#123030 60%,#080c08 100%)' },
-  { title:'Gran Saga',            sub:'Onboarding UX',        large:false, bg:'linear-gradient(160deg,#180a18 0%,#2e122e 60%,#080c08 100%)' },
-  { title:'Yggdrasil',            sub:'Menu Architecture',    large:true,  bg:'linear-gradient(160deg,#0d200e 0%,#183520 60%,#080c08 100%)' },
-  { title:'Dragon Blaze',         sub:'Guild System',         large:false, bg:'linear-gradient(160deg,#1a0e0a 0%,#301a10 60%,#080c08 100%)' },
-  { title:'Hello Hero Epic',      sub:'Daily Mission',        large:false, bg:'linear-gradient(160deg,#0a1620 0%,#102535 60%,#080c08 100%)' },
-  { title:'Stone Age World',      sub:'Social UI',            large:false, bg:'linear-gradient(160deg,#121a08 0%,#202e0e 60%,#080c08 100%)' },
-  { title:'Final Blade',          sub:'Achievement System',   large:false, bg:'linear-gradient(160deg,#180a10 0%,#2e1020 60%,#080c08 100%)' },
-  { title:'Lumia Saga',           sub:'Inventory Grid',       large:false, bg:'linear-gradient(160deg,#0a1a0e 0%,#143020 60%,#080c08 100%)' },
-  { title:'Dark Eden M',          sub:'Profile Page',         large:true,  bg:'linear-gradient(160deg,#100a1a 0%,#1e1230 60%,#080c08 100%)' },
-  { title:'Project K',            sub:'Main Menu Rework',     large:false, bg:'linear-gradient(160deg,#0d1a10 0%,#1a2e18 60%,#080c08 100%)' },
+  { num:'01', title:'Rangers of Oblivion', sub:'Main UI System',       size:'lg', pos:'top',    bg:'linear-gradient(160deg,#0d2010 0%,#1a3a18 60%,#080808 100%)' },
+  { num:'02', title:'Ace Fishing',         sub:'Lobby Redesign',       size:'xl', pos:'bottom',  bg:'linear-gradient(160deg,#0a1a20 0%,#122a30 60%,#080808 100%)' },
+  { num:'03', title:'YULGANG Mobile',      sub:'HUD Design',           size:'sm', pos:'mid',     bg:'linear-gradient(160deg,#1a150a 0%,#2e2410 60%,#080808 100%)' },
+  { num:'04', title:'Seven Knights',       sub:'Battle UI',            size:'xl', pos:'top',     bg:'linear-gradient(160deg,#180a0a 0%,#2e1010 60%,#080808 100%)' },
+  { num:'05', title:'Battlefield Mobile',  sub:'In-Game Interface',    size:'md', pos:'bottom',  bg:'linear-gradient(160deg,#0a1018 0%,#121e2e 60%,#080808 100%)' },
+  { num:'06', title:'Versus: REALM WAR',   sub:'Strategy UI',          size:'lg', pos:'mid',     bg:'linear-gradient(160deg,#100a18 0%,#1e1230 60%,#080808 100%)' },
+  { num:'07', title:'Echo of Combat',      sub:'Character Select',     size:'sm', pos:'top',     bg:'linear-gradient(160deg,#0d2010 0%,#183520 60%,#080808 100%)' },
+  { num:'08', title:"Blade & Soul",        sub:'Shop System',          size:'xl', pos:'bottom',  bg:'linear-gradient(160deg,#1a100a 0%,#2e1e12 60%,#080808 100%)' },
+  { num:'09', title:'Icarus M',            sub:'World Map UI',         size:'md', pos:'mid',     bg:'linear-gradient(160deg,#0a1a12 0%,#143025 60%,#080808 100%)' },
+  { num:'10', title:'Line Rangers',        sub:'Event Lobby',          size:'lg', pos:'top',     bg:'linear-gradient(160deg,#18180a 0%,#2e2e10 60%,#080808 100%)' },
+  { num:'11', title:'Kingdom Defense',     sub:'Tower UI',             size:'sm', pos:'bottom',  bg:'linear-gradient(160deg,#0a1818 0%,#123030 60%,#080808 100%)' },
+  { num:'12', title:'Gran Saga',           sub:'Onboarding UX',        size:'xl', pos:'mid',     bg:'linear-gradient(160deg,#180a18 0%,#2e122e 60%,#080808 100%)' },
+  { num:'13', title:'Yggdrasil',           sub:'Menu Architecture',    size:'md', pos:'top',     bg:'linear-gradient(160deg,#0d200e 0%,#183520 60%,#080808 100%)' },
+  { num:'14', title:'Dragon Blaze',        sub:'Guild System',         size:'lg', pos:'bottom',  bg:'linear-gradient(160deg,#1a0e0a 0%,#301a10 60%,#080808 100%)' },
+  { num:'15', title:'Hello Hero Epic',     sub:'Daily Mission',        size:'sm', pos:'mid',     bg:'linear-gradient(160deg,#0a1620 0%,#102535 60%,#080808 100%)' },
+  { num:'16', title:'Stone Age World',     sub:'Social UI',            size:'xl', pos:'top',     bg:'linear-gradient(160deg,#121a08 0%,#202e0e 60%,#080808 100%)' },
+  { num:'17', title:'Final Blade',         sub:'Achievement System',   size:'md', pos:'bottom',  bg:'linear-gradient(160deg,#180a10 0%,#2e1020 60%,#080808 100%)' },
+  { num:'18', title:'Lumia Saga',          sub:'Inventory Grid',       size:'lg', pos:'mid',     bg:'linear-gradient(160deg,#0a1a0e 0%,#143020 60%,#080808 100%)' },
+  { num:'19', title:'Dark Eden M',         sub:'Profile Page',         size:'sm', pos:'top',     bg:'linear-gradient(160deg,#100a1a 0%,#1e1230 60%,#080808 100%)' },
+  { num:'20', title:'Project K',           sub:'Main Menu Rework',     size:'xl', pos:'bottom',  bg:'linear-gradient(160deg,#0d1a10 0%,#1a2e18 60%,#080808 100%)' },
 ];
 
-const grid = document.getElementById('grid');
+const track    = document.getElementById('track');
+const progFill = document.getElementById('progFill');
 
 PROJECTS.forEach(function(p) {
-  const card = document.createElement('div');
-  card.className = 'card' + (p.large ? ' large' : '');
-  card.innerHTML = `
-    <div class="card-bg">
-      <div style="width:100%;height:100%;background:${p.bg}"></div>
+  const item = document.createElement('div');
+  item.className = `item ${p.size} ${p.pos}`;
+  item.innerHTML = `
+    <div class="item-num">${p.num}</div>
+    <div class="card">
+      <div class="card-bg-div" style="background:${p.bg}"></div>
     </div>
-    <div class="card-overlay"></div>
-    <div class="card-info">
-      <div class="card-title">${p.title}</div>
-      <div class="card-sub">${p.sub}</div>
-    </div>
+    <div class="item-title">${p.title}</div>
+    <div class="item-sub">${p.sub}</div>
   `;
-  grid.appendChild(card);
+  track.appendChild(item);
 });
+
+/* ── SCROLL ── */
+let curX = 0, tarX = 0, prevX = 0;
+let isDragging = false, startX = 0, startTar = 0;
+
+function getMax() {
+  return Math.max(0, track.scrollWidth - window.innerWidth);
+}
+function clamp(v, a, b) { return Math.min(Math.max(v, a), b); }
+
+const wrap = document.getElementById('track-wrap');
+wrap.addEventListener('pointerdown', function(e) {
+  isDragging = true; startX = e.clientX; startTar = tarX;
+  wrap.setPointerCapture(e.pointerId);
+});
+wrap.addEventListener('pointermove', function(e) {
+  if (!isDragging) return;
+  tarX = clamp(startTar + (e.clientX - startX), -getMax(), 0);
+});
+wrap.addEventListener('pointerup',     function() { isDragging = false; });
+wrap.addEventListener('pointercancel', function() { isDragging = false; });
+wrap.addEventListener('wheel', function(e) {
+  e.preventDefault();
+  tarX = clamp(tarX - e.deltaY * 1.2 - e.deltaX, -getMax(), 0);
+}, { passive:false });
+
+(function loop() {
+  requestAnimationFrame(loop);
+  curX += (tarX - curX) * 0.1;
+  track.style.transform = `translateX(${curX}px)`;
+  const max = getMax();
+  progFill.style.width = (max > 0 ? (-curX / max) * 100 : 0) + '%';
+})();
 </script>
 </body>
 </html>
