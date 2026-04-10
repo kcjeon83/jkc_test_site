@@ -541,8 +541,7 @@ const DRAG_PX = 6;   /* 클릭/드래그 구분 임계값 (px) */
 
 let isDown      = false;
 let justDragged = false;  /* 드래그 직후 click 이벤트 차단용 */
-let pressX   = 0;    /* pointerdown 시 pageX */
-let prevX    = 0;    /* 이전 pointermove pageX (경계 재보정용) */
+let pressX   = 0;    /* pointerdown 시 pageX — 드래그 중 절대 변경 안함 */
 let targPrev = 0;    /* pointerdown 시 txTarget */
 
 function maxScroll() {
@@ -561,38 +560,26 @@ trackWrap.addEventListener('pointerdown', e => {
   isDown      = true;
   isDrag      = false;
   justDragged = false;   /* 새 press 시작 → 이전 드래그 플래그 초기화 */
-  pressX    = e.pageX;
-  prevX     = e.pageX;
-  targPrev  = txTarget;   /* 현재 애니메이션 목표값을 기준으로 저장 */
+  pressX   = e.pageX;
+  targPrev = txTarget;   /* 현재 애니메이션 목표값을 기준으로 저장 */
 });
 
 trackWrap.addEventListener('pointermove', e => {
   mouseX = e.clientX;
-  if (!isDown || isDetailOpen) return;
+  if (!isDown) return;
 
-  const max = maxScroll();
+  const delta = e.pageX - pressX;  /* 누른 시점부터의 총 이동량 */
 
-  /* ── 경계 재보정 (Aristide boundary recalibration) ──
-     이미 끝에 닿은 상태에서 반대 방향으로 드래그를 시작하면
-     pressX를 재계산해 즉각 반응하도록 한다 */
-  if (e.pageX > prevX && txTarget <= 0)
-    pressX = e.pageX - (targPrev - 0) / SENSI;
-  if (e.pageX < prevX && txTarget >= max)
-    pressX = e.pageX - (targPrev - max) / SENSI;
-  prevX = e.pageX;
-
-  /* ── 핵심 드래그 공식 ── */
-  txTarget = clamp(-(e.pageX - pressX) * SENSI + targPrev, 0, max);
-
-  /* ── 클릭 vs 드래그 판별 — 물리적 이동 거리 기준 ──
-     txTarget 변화량이 아닌 실제 마우스 이동량으로 판별해야 한다.
-     txTarget은 clamp로 인해 끝에서 변하지 않아 isDrag=false가 유지되고
-     pointerup에서 openDetail이 호출돼 isDetailOpen=true가 되는 버그 방지 */
-  if (!isDrag && Math.abs(e.pageX - pressX) > DRAG_PX) {
+  /* ── 클릭 vs 드래그 판별 (pressX는 pointerdown 이후 절대 변경 안함) ── */
+  if (!isDrag && Math.abs(delta) > DRAG_PX) {
     isDrag = true;
     if (litIdx >= 0) { ITEMS[litIdx].el.classList.remove('lit'); litIdx = -1; }
     document.body.classList.add('dragging');
   }
+  if (!isDrag) return;
+
+  /* ── 핵심 드래그 공식 ── */
+  txTarget = clamp(-delta * SENSI + targPrev, 0, maxScroll());
 });
 
 trackWrap.addEventListener('pointerup', e => {
