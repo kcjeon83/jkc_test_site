@@ -549,14 +549,13 @@ trackWrap.addEventListener('pointerdown', e => {
   isPointerDown = true;
   isDrag = false;
   pointerDownX = e.pageX;
-  txTarget = txCur;          // lerp 목표를 현재 시각 위치로 리셋
-  dragSX = e.pageX; dragTX0 = txCur;
+  dragSX = e.pageX; dragTX0 = txTarget;
 });
 
 trackWrap.addEventListener('pointermove', e => {
   mouseX = e.clientX;
   if (!isPointerDown || isDetailOpen) return;
-  if (!isDrag && Math.abs(e.pageX - pointerDownX) > 4) {
+  if (!isDrag && Math.abs(e.pageX - pointerDownX) > 12) {
     isDrag = true;
     // 드래그 시작 시 lit 상태 초기화 — 드래그 중 실수 클릭 방지
     if (litIdx >= 0) { ITEMS[litIdx].el.classList.remove('lit'); litIdx = -1; }
@@ -570,7 +569,7 @@ trackWrap.addEventListener('pointerup', e => {
   trackWrap.releasePointerCapture(e.pointerId);
   if (isPointerDown) {
     // lit 카드가 있으면 클릭으로 처리 (호버 상태 = 마우스)
-    if (litIdx >= 0 && !isDrag) {
+    if (litIdx >= 0) {
       openDetail(litIdx);
     } else if (!isDrag) {
       // 터치 등 호버 없는 경우 — elementFromPoint 폴백
