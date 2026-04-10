@@ -16,11 +16,9 @@
   --ink2:  rgba(237,245,224,.38);
   --ink3:  rgba(237,245,224,.08);
   --acc:   #b8ff57;
-  --acc2:  rgba(184,255,87,.15);
   --serif: 'EB Garamond', serif;
   --sans:  'Syne', sans-serif;
   --pre:   'Pretendard', sans-serif;
-  --radius: 14px;
 }
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 html, body {
@@ -61,7 +59,7 @@ body::before {
 #bgw {
   position:fixed; bottom:-4vw; right:-1vw; z-index:0;
   font-family:var(--serif); font-style:italic; font-weight:800;
-  font-size:22vw; color:rgba(184,255,87,.025);
+  font-size:22vw; color:rgba(184,255,87,.018);
   line-height:1; letter-spacing:-.02em; pointer-events:none;
   white-space:nowrap; user-select:none;
 }
@@ -69,108 +67,77 @@ body::before {
 /* ─── MAIN ─── */
 #main {
   position:relative; z-index:1;
-  padding:40px 48px 100px;
+  padding:40px 20vw 100px;
 }
 
-/* ─── BENTO GRID ─── */
-.bento {
+/* ─── GRID ─── */
+.grid {
   display:grid;
-  grid-template-columns:repeat(4, 1fr);
-  grid-auto-rows:200px;
-  gap:10px;
+  grid-template-columns:repeat(3, 1fr);
+  gap:14px;
 }
 
-/* ─── CARD BASE ─── */
+/* ─── CARD ─── */
 .card {
   position:relative;
-  border-radius:var(--radius);
+  aspect-ratio:3/4;
   overflow:hidden;
   cursor:pointer;
   background:#0f140f;
-  border:1px solid rgba(184,255,87,.06);
-  transition:border-color .25s ease, box-shadow .25s ease;
+  outline:1px solid rgba(237,245,224,.06);
 }
-.card:hover {
-  border-color:rgba(184,255,87,.22);
-  box-shadow:0 0 28px rgba(184,255,87,.08), 0 0 0 1px rgba(184,255,87,.1);
-}
-
-/* card size variants */
-.card.w2 { grid-column:span 2; }
-.card.h2 { grid-row:span 2; }
-.card.f  { grid-column:span 2; grid-row:span 2; }
-
-/* ─── CARD INNER ─── */
 .card-bg {
   position:absolute; inset:0;
-  transition:filter .2s linear, transform .5s cubic-bezier(.165,.84,.44,1);
-  filter:saturate(.55) brightness(.8);
+  transition:filter .15s linear;
+  filter:saturate(.65) brightness(.82);
 }
 .card-bg img {
   width:100%; height:100%;
   object-fit:cover; display:block;
 }
 .card:hover .card-bg {
-  filter:saturate(1.2) brightness(1.05);
-  transform:scale(1.04);
+  filter:saturate(1.3) brightness(1.15);
 }
 
-/* gradient overlay */
-.card-overlay {
-  position:absolute; inset:0;
-  background:linear-gradient(135deg, rgba(8,12,8,.6) 0%, transparent 60%, rgba(8,12,8,.3) 100%);
-  transition:opacity .25s ease;
-  border-radius:var(--radius);
-}
-.card:hover .card-overlay { opacity:.5; }
-
-/* accent corner line */
-.card::before {
+/* accent top line */
+.card::after {
   content:''; position:absolute;
-  top:0; left:0;
-  width:0; height:2px;
+  top:0; left:0; right:0;
+  height:2px;
   background:var(--acc);
-  border-radius:var(--radius) 0 0 0;
-  transition:width .35s cubic-bezier(.165,.84,.44,1);
+  transform:scaleX(0);
+  transform-origin:left;
+  transition:transform .35s cubic-bezier(.165,.84,.44,1);
   z-index:3;
 }
-.card:hover::before { width:40%; }
+.card:hover::after { transform:scaleX(1); }
 
-/* ─── CARD INFO ─── */
+/* overlay */
+.card-overlay {
+  position:absolute; inset:0;
+  background:linear-gradient(to top, rgba(8,12,8,.92) 0%, rgba(8,12,8,.15) 55%, transparent 100%);
+}
+
+/* info */
 .card-info {
   position:absolute; bottom:0; left:0; right:0;
-  padding:18px 20px;
+  padding:18px 16px;
   opacity:0;
-  transform:translateY(6px);
+  transform:translateY(5px);
   transition:opacity .2s ease, transform .2s ease;
-  z-index:4;
+  z-index:2;
 }
 .card:hover .card-info { opacity:1; transform:translateY(0); }
 
 .card-title {
-  font-family:var(--serif); font-size:15px; font-weight:800;
-  font-style:italic; line-height:1.2; color:var(--ink);
+  font-family:var(--serif); font-size:14px; font-weight:800;
+  font-style:italic; line-height:1.25; color:var(--ink);
   margin-bottom:4px;
 }
-.card.f .card-title { font-size:22px; }
-.card.w2 .card-title { font-size:17px; }
-
 .card-sub {
   font-family:var(--pre); font-size:9px; font-weight:400;
   color:var(--ink2); letter-spacing:.12em; text-transform:uppercase;
 }
-
-/* empty card placeholder */
-.card-empty {
-  position:absolute; inset:0;
-  display:flex; align-items:center; justify-content:center;
-}
-.card-empty-dot {
-  width:6px; height:6px; border-radius:50%;
-  background:rgba(184,255,87,.12);
-  transition:background .25s;
-}
-.card:hover .card-empty-dot { background:rgba(184,255,87,.3); }
 
 /* ─── FOOTER ─── */
 #ft {
@@ -193,12 +160,13 @@ body::before {
 
 /* ─── RESPONSIVE ─── */
 @media(max-width:1100px) {
-  .bento { grid-template-columns:repeat(3,1fr); }
+  #main { padding:40px 10vw 100px; }
+  .grid { grid-template-columns:repeat(3,1fr); }
 }
 @media(max-width:768px) {
   #hd { padding:20px 24px 14px; }
-  #main { padding:24px 16px 80px; }
-  .bento { grid-template-columns:repeat(2,1fr); grid-auto-rows:160px; gap:6px; }
+  #main { padding:24px 6vw 80px; }
+  .grid { grid-template-columns:repeat(2,1fr); gap:8px; }
   .logo { font-size:17px; }
   .logo-tag { display:none; }
   #ft { padding:12px 24px; }
@@ -214,7 +182,7 @@ body::before {
 </header>
 
 <main id="main">
-  <div class="bento" id="bento"></div>
+  <div class="grid" id="grid"></div>
 </main>
 
 <footer id="ft">
@@ -225,63 +193,46 @@ body::before {
 
 <script>
 const PROJECTS = [
-  { title:'Rangers of Oblivion',  sub:'Main UI System',            size:'f'  },
-  { title:'Ace Fishing',          sub:'Lobby Redesign',            size:''   },
-  { title:'YULGANG Mobile',       sub:'HUD Design',                size:''   },
-  { title:'Seven Knights',        sub:'Battle UI',                 size:'w2' },
-  { title:'Battlefield Mobile',   sub:'In-Game Interface',         size:''   },
-  { title:'Versus : REALM WAR',   sub:'Strategy UI',               size:''   },
-  { title:'Echo of Combat',       sub:'Character Select',          size:'h2' },
-  { title:'Blade & Soul',         sub:'Shop System',               size:''   },
-  { title:'Icarus M',             sub:'World Map UI',              size:'w2' },
-  { title:'Line Rangers',         sub:'Event Lobby',               size:''   },
-  { title:'Kingdom Defense',      sub:'Tower UI',                  size:''   },
-  { title:'Gran Saga',            sub:'Onboarding UX',             size:''   },
-  { title:'Yggdrasil',            sub:'Menu Architecture',         size:'w2' },
-  { title:'Dragon Blaze',         sub:'Guild System',              size:''   },
-  { title:'Hello Hero Epic',      sub:'Daily Mission',             size:''   },
-  { title:'Stone Age World',      sub:'Social UI',                 size:'f'  },
-  { title:'Final Blade',          sub:'Achievement System',        size:''   },
-  { title:'Lumia Saga',           sub:'Inventory Grid',            size:''   },
-  { title:'Dark Eden M',          sub:'Profile Page',              size:'w2' },
-  { title:'Project K',            sub:'Main Menu Rework',          size:''   },
+  { title:'Rangers of Oblivion',  sub:'Main UI System',         bg:'linear-gradient(160deg,#0d2010 0%,#1a3a18 60%,#080c08 100%)' },
+  { title:'Ace Fishing',          sub:'Lobby Redesign',         bg:'linear-gradient(160deg,#0a1a20 0%,#122a30 60%,#080c08 100%)' },
+  { title:'YULGANG Mobile',       sub:'HUD Design',             bg:'linear-gradient(160deg,#1a150a 0%,#2e2410 60%,#080c08 100%)' },
+  { title:'Seven Knights',        sub:'Battle UI',              bg:'linear-gradient(160deg,#180a0a 0%,#2e1010 60%,#080c08 100%)' },
+  { title:'Battlefield Mobile',   sub:'In-Game Interface',      bg:'linear-gradient(160deg,#0a1018 0%,#121e2e 60%,#080c08 100%)' },
+  { title:'Versus: REALM WAR',    sub:'Strategy UI',            bg:'linear-gradient(160deg,#100a18 0%,#1e1230 60%,#080c08 100%)' },
+  { title:'Echo of Combat',       sub:'Character Select',       bg:'linear-gradient(160deg,#0d2010 0%,#183520 60%,#080c08 100%)' },
+  { title:'Blade & Soul',         sub:'Shop System',            bg:'linear-gradient(160deg,#1a100a 0%,#2e1e12 60%,#080c08 100%)' },
+  { title:'Icarus M',             sub:'World Map UI',           bg:'linear-gradient(160deg,#0a1a12 0%,#143025 60%,#080c08 100%)' },
+  { title:'Line Rangers',         sub:'Event Lobby',            bg:'linear-gradient(160deg,#18180a 0%,#2e2e10 60%,#080c08 100%)' },
+  { title:'Kingdom Defense',      sub:'Tower UI',               bg:'linear-gradient(160deg,#0a1818 0%,#123030 60%,#080c08 100%)' },
+  { title:'Gran Saga',            sub:'Onboarding UX',          bg:'linear-gradient(160deg,#180a18 0%,#2e122e 60%,#080c08 100%)' },
+  { title:'Yggdrasil',            sub:'Menu Architecture',      bg:'linear-gradient(160deg,#0d200e 0%,#183520 60%,#080c08 100%)' },
+  { title:'Dragon Blaze',         sub:'Guild System',           bg:'linear-gradient(160deg,#1a0e0a 0%,#301a10 60%,#080c08 100%)' },
+  { title:'Hello Hero Epic',      sub:'Daily Mission',          bg:'linear-gradient(160deg,#0a1620 0%,#102535 60%,#080c08 100%)' },
+  { title:'Stone Age World',      sub:'Social UI',              bg:'linear-gradient(160deg,#121a08 0%,#202e0e 60%,#080c08 100%)' },
+  { title:'Final Blade',          sub:'Achievement System',     bg:'linear-gradient(160deg,#180a10 0%,#2e1020 60%,#080c08 100%)' },
+  { title:'Lumia Saga',           sub:'Inventory Grid',         bg:'linear-gradient(160deg,#0a1a0e 0%,#143020 60%,#080c08 100%)' },
+  { title:'Dark Eden M',          sub:'Profile Page',           bg:'linear-gradient(160deg,#100a1a 0%,#1e1230 60%,#080c08 100%)' },
+  { title:'Project K',            sub:'Main Menu Rework',       bg:'linear-gradient(160deg,#0d1a10 0%,#1a2e18 60%,#080c08 100%)' },
 ];
 
-const COLORS = [
-  'linear-gradient(135deg,#0d2010 0%,#183520 60%,#080c08 100%)',
-  'linear-gradient(135deg,#0a1a0a 0%,#1a3a10 60%,#080c08 100%)',
-  'linear-gradient(135deg,#101a08 0%,#253510 60%,#080c08 100%)',
-  'linear-gradient(135deg,#08180a 0%,#123020 60%,#080c08 100%)',
-  'linear-gradient(135deg,#0c200c 0%,#1e401a 60%,#080c08 100%)',
-  'linear-gradient(135deg,#0a1c12 0%,#183828 60%,#080c08 100%)',
-  'linear-gradient(135deg,#101808 0%,#283010 60%,#080c08 100%)',
-];
+const grid = document.getElementById('grid');
 
-const bento = document.getElementById('bento');
-
-PROJECTS.forEach(function(p, i) {
+PROJECTS.forEach(function(p) {
   const card = document.createElement('div');
-  const cls = 'card' + (p.size ? ' ' + p.size : '');
-  card.className = cls;
+  card.className = 'card';
 
-  const bg = COLORS[i % COLORS.length];
+  card.innerHTML = `
+    <div class="card-bg">
+      <div style="width:100%;height:100%;background:${p.bg}"></div>
+    </div>
+    <div class="card-overlay"></div>
+    <div class="card-info">
+      <div class="card-title">${p.title}</div>
+      <div class="card-sub">${p.sub}</div>
+    </div>
+  `;
 
-  if (p.title) {
-    card.innerHTML = `
-      <div class="card-bg">
-        <div style="width:100%;height:100%;background:${bg}"></div>
-      </div>
-      <div class="card-overlay"></div>
-      <div class="card-info">
-        <div class="card-title">${p.title}</div>
-        <div class="card-sub">${p.sub}</div>
-      </div>
-    `;
-  } else {
-    card.innerHTML = `<div class="card-empty"><div class="card-empty-dot"></div></div>`;
-  }
-
-  bento.appendChild(card);
+  grid.appendChild(card);
 });
 </script>
 </body>
