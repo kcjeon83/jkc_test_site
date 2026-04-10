@@ -172,8 +172,87 @@ body::before {
   font-size:13px; color:var(--ink2);
 }
 
-/* ─── CLOSE BTN (from parent) ─── */
-/* Close is handled by parent DetailOverlay */
+/* ─── DETAIL OVERLAY ─── */
+#cdv {
+  position:fixed; inset:0; z-index:500;
+  background:var(--bg);
+  display:grid; grid-template-columns:55% 45%;
+  clip-path:inset(50% 50% 50% 50%);
+  transition:clip-path .85s cubic-bezier(.77,0,.175,1);
+  pointer-events:none;
+}
+#cdv.open {
+  clip-path:inset(0% 0% 0% 0%);
+  pointer-events:all;
+}
+.cdv-vis {
+  position:relative; overflow-y:auto; overflow-x:hidden;
+  background:#000;
+  scrollbar-width:none;
+}
+.cdv-vis::-webkit-scrollbar { display:none; }
+.cdv-vis img {
+  width:100%; display:block; margin:0; padding:0;
+  line-height:0;
+}
+.cdv-vis::after {
+  content:''; position:sticky; bottom:0; left:0; right:0; height:80px;
+  background:linear-gradient(to top, var(--bg), transparent);
+  display:block; pointer-events:none;
+}
+.cdv-body {
+  display:flex; flex-direction:column; justify-content:center;
+  padding:80px 56px 80px 48px;
+  opacity:0; transform:translateX(22px);
+  transition:opacity .6s ease .44s, transform .6s ease .44s;
+  overflow-y:auto;
+}
+#cdv.open .cdv-body { opacity:1; transform:translateX(0); }
+.cdv-eyebrow {
+  font-family:var(--sans); font-size:9px; font-weight:700;
+  letter-spacing:.26em; text-transform:uppercase; color:var(--acc2);
+  display:flex; align-items:center; gap:14px; margin-bottom:14px;
+}
+.cdv-eyebrow::before { content:''; width:30px; height:1px; background:var(--acc2); }
+.cdv-t {
+  font-family:var(--serif); font-weight:800; line-height:.92;
+  letter-spacing:-.02em; color:var(--ink);
+  font-size:clamp(40px,4.5vw,72px); margin-bottom:8px;
+}
+.cdv-t em { font-style:italic; color:var(--acc2); }
+.cdv-sub {
+  font-family:var(--serif); font-style:italic;
+  font-size:clamp(13px,1.3vw,18px); color:var(--ink2);
+  margin-bottom:28px; letter-spacing:.02em;
+}
+.cdv-period {
+  font-family:var(--sans); font-size:9px; letter-spacing:.22em;
+  text-transform:uppercase; color:var(--ink2);
+  margin-bottom:28px; display:flex; align-items:center; gap:12px;
+}
+.cdv-period::before { content:''; width:20px; height:1px; background:var(--ink3); }
+.cdv-desc {
+  font-family:'Pretendard', var(--sans); font-size:14px; line-height:1.85;
+  color:var(--ink2); max-width:340px; margin-bottom:0;
+}
+.cdv-back {
+  position:fixed; top:24px; right:24px; z-index:600;
+  display:flex; align-items:center; gap:8px;
+  font-family:var(--sans); font-size:12px; font-weight:600;
+  letter-spacing:2px; text-transform:uppercase; color:var(--ink);
+  cursor:pointer; transition:color .22s;
+  background:none; border:none; padding:8px;
+  opacity:0; pointer-events:none;
+  transition:opacity .3s ease .8s, color .22s;
+}
+#cdv.open .cdv-back { opacity:1; pointer-events:all; }
+.cdv-back:hover { color:var(--acc2); }
+
+@media(max-width:768px) {
+  #cdv { grid-template-columns:1fr; }
+  .cdv-vis { max-height:50vh; }
+  .cdv-body { padding:32px 24px; }
+}
 
 /* ─── RESPONSIVE ─── */
 @media(max-width:768px) {
@@ -198,6 +277,24 @@ body::before {
 <main id="main">
   <div class="grid" id="grid"></div>
 </main>
+
+<!-- Detail Overlay -->
+<div id="cdv">
+  <div class="cdv-vis" id="cdvVis">
+    <img src="/02card_detail01_1.jpg" alt="">
+    <img src="/02card_detail01_2.jpg" alt="">
+    <img src="/02card_detail01_3.jpg" alt="">
+    <img src="/02card_detail01_4.jpg" alt="">
+  </div>
+  <div class="cdv-body">
+    <div class="cdv-eyebrow">GAME UI / UX</div>
+    <div class="cdv-t">Diverse<br><em>Order</em></div>
+    <div class="cdv-sub">디버스오더 모바일 UI Design</div>
+    <div class="cdv-period">2021.04 — 2021.12</div>
+    <p class="cdv-desc">센추리게임즈 재직 중 담당한 모바일 게임 디버스오더의 전반적인 UI/UX 디자인 작업입니다. 로비, HUD, 상점, 캐릭터 선택 등 게임 내 주요 인터페이스를 설계하고 구현했습니다.</p>
+  </div>
+  <button class="cdv-back" id="cdvBack">CLOSE ✕</button>
+</div>
 
 <footer id="ft">
   <div class="ft-label">Century Games Corp.</div>
@@ -260,13 +357,39 @@ PROJECTS.forEach(function(p) {
       <div class="card-bg">${p.bg.startsWith('url(') ? `<img src="${p.bg.slice(4,-1)}" alt="${p.title}">` : `<div style="width:100%;height:100%;background:${p.bg}"></div>`}</div>
       <div class="card-overlay"></div>
       <div class="card-info">
-        <div class="card-num">No. ${p.num}</div>
         <div class="card-title">${p.title}</div>
         <div class="card-sub">${p.sub}</div>
       </div>
     </div>
   `;
+  // 카드 1번 클릭 시 상세 오버레이 열기
+  if (p.num === '01') {
+    card.style.cursor = 'pointer';
+    card.addEventListener('click', openDetail);
+  }
+
   grid.appendChild(card);
+});
+
+/* ── 상세 오버레이 ── */
+const cdv     = document.getElementById('cdv');
+const cdvBack = document.getElementById('cdvBack');
+const cdvVis  = document.getElementById('cdvVis');
+
+function openDetail() {
+  cdv.classList.add('open');
+  cdvVis.scrollTop = 0;
+  window.parent.postMessage('detail:open', '*');
+}
+
+function closeDetail() {
+  cdv.classList.remove('open');
+  window.parent.postMessage('detail:close', '*');
+}
+
+cdvBack.addEventListener('click', closeDetail);
+document.addEventListener('keydown', function(e) {
+  if (e.key === 'Escape') closeDetail();
 });
 </script>
 </body>
