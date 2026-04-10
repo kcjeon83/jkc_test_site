@@ -34,9 +34,6 @@ body::after {
   opacity:.55;
 }
 
-/* ─── CURSOR ─── */
-#cur-dot { display:none; }
-
 
 /* ─── HEADER ─── */
 #hd {
@@ -293,8 +290,6 @@ body.dragging { cursor: grabbing !important; }
   .logo { font-size:16px; }
   .logo-tag { font-size:8px; }
 
-  /* hide custom cursor */
-  #cur-dot { display:none; }
 
   /* bg word smaller */
   #bgw { font-size:38vw; bottom:-2vw; }
@@ -336,7 +331,6 @@ body.dragging { cursor: grabbing !important; }
 </head>
 <body>
 
-<div id="cur-dot"></div>
 <div id="bgw">UX laboratory</div>
 
 <header id="hd">
@@ -755,15 +749,11 @@ window.addEventListener('touchstart', e => {
   }
 }, {passive:true});
 
-const cDot = document.getElementById('cur-dot');
 let litIdx = -1;
 
 window.addEventListener('mousemove', e => {
   /* mouseX는 드래그 중에만 업데이트 — 클릭 없이 커서만 움직여도 카드가 반응하지 않도록 */
   if (_drag) mouseX = e.clientX;
-  cDot.style.left = e.clientX + 'px';
-  cDot.style.top  = e.clientY + 'px';
-  cDot.style.opacity = '1';
 
   if (isDrag) return; // don't update lit while dragging
 
