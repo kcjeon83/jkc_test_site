@@ -12,15 +12,13 @@
   --ink2:  rgba(245,236,224,.38);
   --ink3:  rgba(245,236,224,.08);
   --gold:  #e8692a;
-  --serif: 'Pretendard', sans-serif;
-  --sans:  'Pretendard', sans-serif;
   --pre:   'Pretendard', sans-serif;
 }
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 html, body {
   width:100%; height:100%;
   background:var(--bg); color:var(--ink);
-  font-family:var(--sans);
+  font-family:var(--pre);
   overflow:hidden;
   -webkit-font-smoothing:antialiased;
   cursor:default;
@@ -40,11 +38,11 @@ body::after {
   padding:30px 48px 20px;
 }
 .logo {
-  font-family:var(--pre); font-size:22px; font-weight:600;
+  font-size:22px; font-weight:600;
   letter-spacing:.1em;
 }
 .logo-tag {
-  font-family:var(--sans); font-size:9px; font-weight:400;
+  font-size:9px;
   letter-spacing:.26em; color:var(--ink2); text-transform:uppercase;
   margin-left:14px;
 }
@@ -52,7 +50,7 @@ body::after {
 /* ─── BG WORD ─── */
 #bgw {
   position:fixed; bottom:-4vw; left:-1vw; z-index:0;
-  font-family:var(--pre); font-weight:600;
+  font-weight:600;
   font-size:26vw; color:rgba(232,105,42,.03);
   line-height:1; letter-spacing:-.02em; pointer-events:none;
   white-space:nowrap; user-select:none;
@@ -68,7 +66,7 @@ body::after {
 }
 #guide.hidden { opacity:0; }
 #guide span {
-  font-family:var(--sans); font-size:9px; letter-spacing:.22em;
+  font-size:9px; letter-spacing:.22em;
   text-transform:uppercase; color:var(--ink);
 }
 #guide-line { width:1px; height:30px; background:var(--ink); }
@@ -139,11 +137,11 @@ body::after {
 }
 .gi:hover .gi-info { opacity:1; transform:translateY(0); }
 .gi-title {
-  font-family:var(--pre); font-size:13px; font-weight:600;
+  font-size:13px; font-weight:600;
   color:var(--ink); line-height:1.2; margin-bottom:3px;
 }
 .gi-sub {
-  font-family:var(--pre); font-size:8px; letter-spacing:.12em;
+  font-size:8px; letter-spacing:.12em;
   text-transform:uppercase; color:var(--ink2);
 }
 
@@ -155,7 +153,7 @@ body::after {
   border-top:1px solid var(--ink3);
 }
 .ft-hint {
-  font-family:var(--sans); font-size:9px;
+  font-size:9px;
   letter-spacing:.22em; text-transform:uppercase; color:var(--ink2);
   display:flex; align-items:center; gap:12px;
 }
@@ -170,7 +168,7 @@ body::after {
   width:0%;
 }
 .ft-count {
-  font-family:var(--pre); font-size:13px;
+  font-size:13px;
   color:var(--ink2); letter-spacing:.04em;
 }
 .ft-count em { color:var(--ink); font-weight:600; }
@@ -200,7 +198,7 @@ body::after {
   <div id="guide-line"></div>
 </div>
 
-<div id="track-wrap" id="trackWrap">
+<div id="track-wrap">
   <div id="track"></div>
 </div>
 

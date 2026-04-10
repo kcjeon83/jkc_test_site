@@ -12,15 +12,13 @@
   --ink2:  rgba(240,240,240,.38);
   --ink3:  rgba(240,240,240,.1);
   --acc:   #b8ff57;
-  --serif: 'Pretendard', sans-serif;
-  --sans:  'Pretendard', sans-serif;
   --pre:   'Pretendard', sans-serif;
 }
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 html, body {
   width:100%; height:100%;
   background:var(--bg); color:var(--ink);
-  font-family:var(--sans);
+  font-family:var(--pre);
   overflow:hidden;
   -webkit-font-smoothing:antialiased;
 }
@@ -37,9 +35,9 @@ body::after {
   display:flex; align-items:flex-end; justify-content:space-between;
   padding:28px 48px 18px;
 }
-.logo { font-family:var(--pre); font-size:22px; font-weight:600; letter-spacing:.08em; }
+.logo { font-size:22px; font-weight:600; letter-spacing:.08em; }
 .logo-tag {
-  font-family:var(--sans); font-size:9px; letter-spacing:.26em;
+  font-size:9px; letter-spacing:.26em;
   color:var(--ink2); text-transform:uppercase; margin-left:14px;
 }
 
@@ -98,19 +96,13 @@ body::after {
 .item.lg .card  { width:260px; height:420px; }
 .item.xl .card  { width:300px; height:480px; }
 
-/* ─── ITEM NUMBER ─── */
-.item-num {
-  font-family:var(--sans); font-size:10px; font-weight:400;
-  letter-spacing:.2em; color:var(--ink2);
-}
-
 /* ─── ITEM TITLE ─── */
 .item-title {
-  font-family:var(--pre); font-size:10px; font-weight:600;
+  font-size:10px; font-weight:600;
   letter-spacing:.18em; text-transform:uppercase; color:var(--ink);
 }
 .item-sub {
-  font-family:var(--pre); font-size:9px; font-weight:400;
+  font-size:9px;
   letter-spacing:.1em; color:var(--ink2); margin-top:-8px;
   text-transform:uppercase;
 }
