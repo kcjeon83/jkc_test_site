@@ -521,11 +521,26 @@ GAMES.forEach((g, i) => {
 });
 }
 
-/* ══ HORIZONTAL DRAG ONLY ══ */
+/* ══ HORIZONTAL DRAG — aristidebenoist.com 패턴 ══
+   핵심 공식: txTarget = -(pageX - pressX) * SENSI + targPrev
+   - pressX   : pointerdown 시 pageX
+   - targPrev : pointerdown 시 txTarget (애니메이션 목표값 기준)
+   - SENSI    : 드래그 감도 (1.2)
+   경계 재보정: 양 끝에 닿았을 때 pressX를 재계산해 다음 드래그에서 점프 없음
+   클릭 판별: |txTarget - targPrev| / SENSI > 6px 이상 이동 시 드래그로 판정
+   ══════════════════════════════════════════════════════════════ */
 let txTarget = 0, txCur = 0, txPrev = 0;
-let isDrag = false, dragSX = 0, dragTX0 = 0;
+let isDrag    = false;
 let isDetailOpen = false;
 let mouseX = window.innerWidth / 2;
+
+const SENSI = 1.2;
+const DRAG_PX = 6;   /* 클릭/드래그 구분 임계값 (px) */
+
+let isDown   = false;
+let pressX   = 0;    /* pointerdown 시 pageX */
+let prevX    = 0;    /* 이전 pointermove pageX (경계 재보정용) */
+let targPrev = 0;    /* pointerdown 시 txTarget */
 
 function maxScroll() {
   let total = ITEMS.reduce((s,it) => s + it.baseW + 14, 0) - 14;
@@ -533,61 +548,70 @@ function maxScroll() {
 }
 function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
 
-/* pointer events — covers mouse + touch, setPointerCapture guarantees pointerup
-   even when released outside the window.
-   클릭 vs 드래그 구분: 5px 이상 이동 시 드래그로 판정, 미만이면 카드 클릭으로 처리 */
 const trackWrap = document.getElementById('track-wrap');
 trackWrap.style.touchAction = 'none';
-
-let pointerDownX = 0;
-let isPointerDown = false;
 
 trackWrap.addEventListener('pointerdown', e => {
   if (isDetailOpen) return;
   if (e.pointerType === 'mouse' && e.button !== 0) return;
   trackWrap.setPointerCapture(e.pointerId);
-  isPointerDown = true;
-  isDrag = false;
-  pointerDownX = e.pageX;
-  dragSX = e.pageX; dragTX0 = txTarget;
+  isDown    = true;
+  isDrag    = false;
+  pressX    = e.pageX;
+  prevX     = e.pageX;
+  targPrev  = txTarget;   /* 현재 애니메이션 목표값을 기준으로 저장 */
 });
 
 trackWrap.addEventListener('pointermove', e => {
   mouseX = e.clientX;
-  if (!isPointerDown || isDetailOpen) return;
-  if (!isDrag && Math.abs(e.pageX - pointerDownX) > 12) {
+  if (!isDown || isDetailOpen) return;
+
+  const max = maxScroll();
+
+  /* ── 경계 재보정 (Aristide boundary recalibration) ──
+     이미 끝에 닿은 상태에서 반대 방향으로 드래그를 시작하면
+     pressX를 재계산해 즉각 반응하도록 한다 */
+  if (e.pageX > prevX && txTarget <= 0)
+    pressX = e.pageX - (targPrev - 0) / SENSI;
+  if (e.pageX < prevX && txTarget >= max)
+    pressX = e.pageX - (targPrev - max) / SENSI;
+  prevX = e.pageX;
+
+  /* ── 핵심 드래그 공식 ── */
+  txTarget = clamp(-(e.pageX - pressX) * SENSI + targPrev, 0, max);
+
+  /* ── 클릭 vs 드래그 판별 ── */
+  if (!isDrag && Math.abs(txTarget - targPrev) / SENSI > DRAG_PX) {
     isDrag = true;
-    // 드래그 시작 시 lit 상태 초기화 — 드래그 중 실수 클릭 방지
     if (litIdx >= 0) { ITEMS[litIdx].el.classList.remove('lit'); litIdx = -1; }
     document.body.classList.add('dragging');
   }
-  if (!isDrag) return;
-  txTarget = clamp(dragTX0 - (e.pageX - dragSX), 0, maxScroll());
 });
 
 trackWrap.addEventListener('pointerup', e => {
   trackWrap.releasePointerCapture(e.pointerId);
-  if (isPointerDown) {
-    // lit 카드가 있으면 클릭으로 처리 (호버 상태 = 마우스)
-    if (litIdx >= 0) {
-      openDetail(litIdx);
-    } else if (!isDrag) {
-      // 터치 등 호버 없는 경우 — elementFromPoint 폴백
-      const card = document.elementFromPoint(e.clientX, e.clientY)?.closest('.gi');
-      if (card) {
-        const idx = ITEMS.findIndex(it => it.el === card);
-        if (idx >= 0) openDetail(idx);
+  if (isDown) {
+    if (!isDrag) {
+      /* 드래그가 아니면 클릭으로 처리 */
+      if (litIdx >= 0) {
+        openDetail(litIdx);                          /* 마우스 호버 카드 */
+      } else {
+        const card = document.elementFromPoint(e.clientX, e.clientY)?.closest('.gi');
+        if (card) {
+          const idx = ITEMS.findIndex(it => it.el === card);
+          if (idx >= 0) openDetail(idx);             /* 터치 폴백 */
+        }
       }
     }
   }
-  isPointerDown = false;
+  isDown = false;
   isDrag = false;
   document.body.classList.remove('dragging');
 });
 
 trackWrap.addEventListener('pointercancel', e => {
   trackWrap.releasePointerCapture(e.pointerId);
-  isPointerDown = false;
+  isDown = false;
   isDrag = false;
   document.body.classList.remove('dragging');
 });
