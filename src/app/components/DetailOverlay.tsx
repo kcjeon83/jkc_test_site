@@ -109,7 +109,7 @@ export function DetailOverlay({ item, onClose }: DetailOverlayProps) {
               exit={{ opacity: 0 }}
               transition={{ duration: 0.5, delay: 1 }}
               onClick={onClose}
-              className="absolute top-6 right-6 md:top-12 md:right-12 flex items-center gap-2 text-[12px] tracking-[2px] z-[101] cursor-pointer p-2 transition-colors uppercase font-sans font-semibold"
+              className="absolute top-6 right-6 md:top-[32px] md:right-12 flex items-center gap-2 text-[12px] tracking-[2px] z-[101] cursor-pointer p-2 transition-colors uppercase font-sans font-semibold"
               style={{ color: item.link ? '#f0ebe0' : '#1a1a1a' }}
               onMouseEnter={e => (e.currentTarget.style.color = '#d4af37')}
               onMouseLeave={e => (e.currentTarget.style.color = item.link ? '#f0ebe0' : '#1a1a1a')}
