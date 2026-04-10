@@ -176,7 +176,7 @@ body::before {
 #cdv {
   position:fixed; inset:0; z-index:500;
   background:var(--bg);
-  display:grid; grid-template-columns:55% 45%;
+  display:grid; grid-template-columns:50% 50%;
   clip-path:inset(50% 50% 50% 50%);
   transition:clip-path .85s cubic-bezier(.77,0,.175,1);
   pointer-events:none;
@@ -202,7 +202,7 @@ body::before {
 }
 .cdv-body {
   display:flex; flex-direction:column; justify-content:center;
-  padding:80px 56px 80px 48px;
+  padding:80px 60px 80px 4px;
   opacity:0; transform:translateX(22px);
   transition:opacity .6s ease .44s, transform .6s ease .44s;
   overflow-y:auto;
