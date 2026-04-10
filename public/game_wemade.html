@@ -549,8 +549,6 @@ trackWrap.addEventListener('pointerdown', e => {
   isPointerDown = true;
   isDrag = false;
   pointerDownX = e.pageX;
-  txTarget = txCur;          // lerp 목표를 현재 시각 위치로 리셋
-  dragSX = e.pageX; dragTX0 = txCur;
 });
 
 trackWrap.addEventListener('pointermove', e => {
@@ -558,7 +556,10 @@ trackWrap.addEventListener('pointermove', e => {
   if (!isPointerDown || isDetailOpen) return;
   if (!isDrag && Math.abs(e.pageX - pointerDownX) > 4) {
     isDrag = true;
-    // 드래그 시작 시 lit 상태 초기화 — 드래그 중 실수 클릭 방지
+    // 드래그 인식 순간에 기준점 동기화 (txCur = 현재 시각 위치)
+    txTarget = txCur;
+    dragSX = e.pageX;
+    dragTX0 = txCur;
     if (litIdx >= 0) { ITEMS[litIdx].el.classList.remove('lit'); litIdx = -1; }
     document.body.classList.add('dragging');
   }
