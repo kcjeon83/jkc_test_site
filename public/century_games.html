@@ -107,7 +107,8 @@ body::before {
   aspect-ratio:3/4;
   overflow:hidden;
   cursor:pointer;
-  background:#1a1610;
+  background:#2a2420;
+  outline:1px solid rgba(240,232,216,.06);
 }
 .card-inner {
   width:100%; height:100%;
@@ -119,11 +120,11 @@ body::before {
   background-size:cover; background-position:center;
   transition:transform .7s cubic-bezier(.165,.84,.44,1),
              filter .7s ease;
-  filter:grayscale(.6) brightness(.85);
+  filter:grayscale(.3) brightness(1);
 }
 .card:hover .card-bg {
   transform:scale(1.06);
-  filter:grayscale(0) brightness(1);
+  filter:grayscale(0) brightness(1.1);
 }
 .card-overlay {
   position:absolute; inset:0;
@@ -246,45 +247,45 @@ body::before {
 <script>
 const PROJECTS = [
   { num:'01', title:"Conqueror's Blade", sub:'Main Lobby UI Redesign', tags:['UI Design','Game','Lobby'], wide:true,
-    bg:'linear-gradient(135deg,#1a1008 0%,#3d2210 50%,#1a0e06 100%)' },
+    bg:'url(/card_thum01.jpg)' },
   { num:'02', title:'Mobile Strategy HUD', sub:'In-Game HUD System', tags:['HUD','Mobile','System'],
-    bg:'linear-gradient(135deg,#0d1520 0%,#1e3040 50%,#0a1018 100%)' },
+    bg:'url(/card_thum02.jpg)' },
   { num:'03', title:'Merchant System', sub:'Shop & Economy UI', tags:['UI','Economy','Shop'],
-    bg:'linear-gradient(135deg,#1a1205 0%,#3a2a10 50%,#120e06 100%)' },
+    bg:'url(/card_thum03.jpg)' },
   { num:'04', title:'Battle Pass', sub:'Season Pass Interface', tags:['Season','Pass','Rewards'],
-    bg:'linear-gradient(135deg,#120820 0%,#2a1440 50%,#0c0818 100%)' },
+    bg:'url(/card_thum04.jpg)' },
   { num:'05', title:'Hero Selection', sub:'Character Select Screen', tags:['Character','Select','UX'], wide:true,
-    bg:'linear-gradient(135deg,#0e1a10 0%,#1e3820 50%,#0a1208 100%)' },
+    bg:'url(/card_thum05.jpg)' },
   { num:'06', title:'World Map', sub:'Strategic Map Interface', tags:['Map','Strategy','UI'],
-    bg:'linear-gradient(135deg,#1a0808 0%,#381818 50%,#120606 100%)' },
+    bg:'url(/card_thum06.jpg)' },
   { num:'07', title:'Guild System', sub:'Social & Alliance UI', tags:['Social','Guild','Alliance'],
-    bg:'linear-gradient(135deg,#08101a 0%,#122035 50%,#060c14 100%)' },
+    bg:'url(/card_thum07.jpg)' },
   { num:'08', title:'Equipment Forge', sub:'Crafting & Upgrade System', tags:['Crafting','System','Forge'],
-    bg:'linear-gradient(135deg,#1a1010 0%,#382218 50%,#120c08 100%)' },
+    bg:'url(/card_thum08.jpg)' },
   { num:'09', title:'Achievement Hall', sub:'Trophy & Milestone UI', tags:['Achievement','Trophy','UI'],
-    bg:'linear-gradient(135deg,#100a1a 0%,#241538 50%,#0c0814 100%)' },
+    bg:'url(/card_thum09.jpg)' },
   { num:'10', title:'Daily Missions', sub:'Quest & Task Interface', tags:['Quest','Daily','UX'], wide:true,
-    bg:'linear-gradient(135deg,#0a1a12 0%,#143525 50%,#080e0a 100%)' },
+    bg:'url(/card_thum10.jpg)' },
   { num:'11', title:'Ranking Board', sub:'PvP Leaderboard Design', tags:['PvP','Rank','Leaderboard'],
-    bg:'linear-gradient(135deg,#1a1400 0%,#38300a 50%,#120e00 100%)' },
+    bg:'url(/card_thum11.jpg)' },
   { num:'12', title:'Notification System', sub:'Alert & Push UI', tags:['Notification','Alert','System'],
-    bg:'linear-gradient(135deg,#001a18 0%,#0a3530 50%,#001210 100%)' },
+    bg:'url(/card_thum12.jpg)' },
   { num:'13', title:'Tutorial Flow', sub:'Onboarding UX Design', tags:['Tutorial','Onboarding','UX'],
-    bg:'linear-gradient(135deg,#1a0010 0%,#380020 50%,#12000c 100%)' },
+    bg:'linear-gradient(135deg,#5c2a1a 0%,#8c4a2a 50%,#3a1a0e 100%)' },
   { num:'14', title:'Event Lobby', sub:'Seasonal Event Interface', tags:['Event','Seasonal','UI'],
-    bg:'linear-gradient(135deg,#001018 0%,#002535 50%,#000c14 100%)' },
+    bg:'linear-gradient(135deg,#1a2a4a 0%,#2a4a7a 50%,#0e1a30 100%)' },
   { num:'15', title:'Inventory Grid', sub:'Item Management System', tags:['Inventory','Items','UI'], wide:true,
-    bg:'linear-gradient(135deg,#101a00 0%,#253800 50%,#0c1200 100%)' },
+    bg:'linear-gradient(135deg,#2a3a1a 0%,#4a6a2a 50%,#1a2a0e 100%)' },
   { num:'16', title:'Loading Screen', sub:'Scene Transition Design', tags:['Loading','Transition','Motion'],
-    bg:'linear-gradient(135deg,#1a0818 0%,#381035 50%,#120614 100%)' },
+    bg:'linear-gradient(135deg,#3a1a2a 0%,#6a2a4a 50%,#2a0e1a 100%)' },
   { num:'17', title:'Chat System', sub:'In-Game Messaging UI', tags:['Chat','Social','UI'],
-    bg:'linear-gradient(135deg,#001818 0%,#003535 50%,#001212 100%)' },
+    bg:'linear-gradient(135deg,#1a3a3a 0%,#2a6a6a 50%,#0e2a2a 100%)' },
   { num:'18', title:'Settings Panel', sub:'Options & Accessibility UI', tags:['Settings','Options','UX'],
-    bg:'linear-gradient(135deg,#181800 0%,#353500 50%,#121200 100%)' },
+    bg:'linear-gradient(135deg,#3a3a1a 0%,#6a6a2a 50%,#2a2a0e 100%)' },
   { num:'19', title:'Profile Page', sub:'Player Identity & Stats', tags:['Profile','Stats','Identity'],
-    bg:'linear-gradient(135deg,#180018 0%,#350035 50%,#120012 100%)' },
+    bg:'linear-gradient(135deg,#3a1a3a 0%,#6a2a6a 50%,#2a0e2a 100%)' },
   { num:'20', title:'Main Menu Rework', sub:'Full Menu Architecture Redesign', tags:['Menu','Architecture','Full Redesign'], wide:true,
-    bg:'linear-gradient(135deg,#1a1008 0%,#3d2210 30%,#0e0c09 100%)' },
+    bg:'linear-gradient(135deg,#5c3a1a 0%,#9a6a2a 40%,#3a2a0e 100%)' },
 ];
 
 const grid = document.getElementById('grid');
