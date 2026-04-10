@@ -580,8 +580,11 @@ trackWrap.addEventListener('pointermove', e => {
   /* ── 핵심 드래그 공식 ── */
   txTarget = clamp(-(e.pageX - pressX) * SENSI + targPrev, 0, max);
 
-  /* ── 클릭 vs 드래그 판별 ── */
-  if (!isDrag && Math.abs(txTarget - targPrev) / SENSI > DRAG_PX) {
+  /* ── 클릭 vs 드래그 판별 — 물리적 이동 거리 기준 ──
+     txTarget 변화량이 아닌 실제 마우스 이동량으로 판별해야 한다.
+     txTarget은 clamp로 인해 끝에서 변하지 않아 isDrag=false가 유지되고
+     pointerup에서 openDetail이 호출돼 isDetailOpen=true가 되는 버그 방지 */
+  if (!isDrag && Math.abs(e.pageX - pressX) > DRAG_PX) {
     isDrag = true;
     if (litIdx >= 0) { ITEMS[litIdx].el.classList.remove('lit'); litIdx = -1; }
     document.body.classList.add('dragging');
