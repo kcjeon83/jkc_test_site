@@ -517,64 +517,52 @@ function maxScroll() {
 }
 function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
 
-/* pointer events — covers mouse + touch, setPointerCapture guarantees pointerup
-   even when released outside the window.
-   클릭 vs 드래그 구분: 5px 이상 이동 시 드래그로 판정, 미만이면 카드 클릭으로 처리 */
+/* pointer events */
 const trackWrap = document.getElementById('track-wrap');
 trackWrap.style.touchAction = 'none';
-
-let pointerDownX = 0;
-let isPointerDown = false;
 
 trackWrap.addEventListener('pointerdown', e => {
   if (isDetailOpen) return;
   if (e.pointerType === 'mouse' && e.button !== 0) return;
   trackWrap.setPointerCapture(e.pointerId);
-  isPointerDown = true;
   isDrag = false;
-  pointerDownX = e.pageX;
-  dragSX = e.pageX; dragTX0 = txTarget;
+  dragSX = e.clientX;
+  // ★ 핵심 수정: txCur(화면 실제 위치) 기준으로 시작 — txTarget 기준이면
+  //   lerp가 덜 따라온 상태에서 두 번째 드래그 시 시작점이 어긋남
+  dragTX0 = txCur;
+  txTarget = txCur; // 진행 중인 lerp 즉시 정지
 });
 
 trackWrap.addEventListener('pointermove', e => {
   mouseX = e.clientX;
-  if (!isPointerDown || isDetailOpen) return;
-  if (!isDrag && Math.abs(e.pageX - pointerDownX) > 12) {
+  if (!trackWrap.hasPointerCapture(e.pointerId) || isDetailOpen) return;
+  const dx = dragSX - e.clientX; // 왼쪽으로 이동 = 양수 = 앞으로 스크롤
+  if (!isDrag && Math.abs(dx) > 5) {
     isDrag = true;
-    // 드래그 시작 시 lit 상태 초기화 — 드래그 중 실수 클릭 방지
-    if (litIdx >= 0) { ITEMS[litIdx].el.classList.remove('lit'); litIdx = -1; }
+    litIdx = -1;
     document.body.classList.add('dragging');
   }
-  if (!isDrag) return;
-  txTarget = clamp(dragTX0 - (e.pageX - dragSX), 0, maxScroll());
+  if (isDrag) {
+    txTarget = clamp(dragTX0 + dx, 0, maxScroll());
+  }
 });
 
-trackWrap.addEventListener('pointerup', e => {
+function endDrag(e) {
+  const wasDrag = isDrag;
   trackWrap.releasePointerCapture(e.pointerId);
-  if (isPointerDown) {
-    // lit 카드가 있으면 클릭으로 처리 (호버 상태 = 마우스, 드래그 아닐 때만)
-    if (!isDrag && litIdx >= 0) {
-      openDetail(litIdx);
-    } else if (!isDrag) {
-      // 터치 등 호버 없는 경우 — elementFromPoint 폴백
-      const card = document.elementFromPoint(e.clientX, e.clientY)?.closest('.gi');
-      if (card) {
-        const idx = ITEMS.findIndex(it => it.el === card);
-        if (idx >= 0) openDetail(idx);
-      }
+  isDrag = false;
+  document.body.classList.remove('dragging');
+  if (!wasDrag) {
+    // 클릭: 커서 아래 카드 열기 (마우스·터치 공통)
+    const card = document.elementFromPoint(e.clientX, e.clientY)?.closest('.gi');
+    if (card) {
+      const idx = ITEMS.findIndex(it => it.el === card);
+      if (idx >= 0) openDetail(idx);
     }
   }
-  isPointerDown = false;
-  isDrag = false;
-  document.body.classList.remove('dragging');
-});
-
-trackWrap.addEventListener('pointercancel', e => {
-  trackWrap.releasePointerCapture(e.pointerId);
-  isPointerDown = false;
-  isDrag = false;
-  document.body.classList.remove('dragging');
-});
+}
+trackWrap.addEventListener('pointerup',     endDrag);
+trackWrap.addEventListener('pointercancel', endDrag);
 
 /* ══ RENDER LOOP ══ */
 const progFill = document.getElementById('progFill');
