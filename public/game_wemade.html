@@ -542,7 +542,7 @@ const DRAG_PX = 6;   /* 클릭/드래그 구분 임계값 (px) */
 let isDown      = false;
 let justDragged = false;  /* 드래그 직후 click 이벤트 차단용 */
 let pressX   = 0;    /* pointerdown 시 pageX — 드래그 중 절대 변경 안함 */
-let targPrev = 0;    /* pointerdown 시 txTarget */
+let targPrev = 0;    /* pointerdown 시 txCur (화면 실제 위치) */
 
 function maxScroll() {
   /* padding 0 50vw (양쪽 합 = 100vw = innerWidth)
@@ -564,7 +564,8 @@ trackWrap.addEventListener('pointerdown', e => {
   isDrag      = false;
   justDragged = false;
   pressX   = e.pageX;
-  targPrev = txTarget;
+  targPrev = txCur;    /* 화면에 보이는 위치 기준 (txTarget은 lerp 목표라 괴리 발생) */
+  txTarget = txCur;    /* 잡는 순간 lerp 정지 → 기준점과 시각 위치 일치 */
 });
 
 trackWrap.addEventListener('pointermove', e => {
