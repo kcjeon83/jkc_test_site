@@ -110,21 +110,15 @@ body::before {
 .card-bg {
   position:absolute; inset:0;
   background-size:cover; background-position:center;
-  transition:transform .7s cubic-bezier(.165,.84,.44,1),
-             filter .7s ease;
-  filter:grayscale(.3) brightness(1);
+  transition:filter .15s linear;
+  filter:saturate(.65) brightness(.82);
 }
 .card:hover .card-bg {
-  transform:scale(1.06);
-  filter:grayscale(0) brightness(1.1);
+  filter:saturate(1.3) brightness(1.25);
 }
 .card-overlay {
   position:absolute; inset:0;
   background:linear-gradient(to top, rgba(14,12,9,.95) 0%, rgba(14,12,9,.2) 50%, transparent 100%);
-  transition:opacity .4s ease;
-}
-.card:hover .card-overlay {
-  opacity:.7;
 }
 .card-num {
   position:absolute; top:16px; left:18px;
