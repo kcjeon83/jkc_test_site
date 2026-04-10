@@ -554,14 +554,16 @@ const trackWrap = document.getElementById('track-wrap');
 trackWrap.style.touchAction = 'none';
 
 trackWrap.addEventListener('pointerdown', e => {
-  if (isDetailOpen) return;
   if (e.pointerType === 'mouse' && e.button !== 0) return;
+  /* isDetailOpen 체크 제거 — #dv.open의 pointer-events:all이 CSS로 차단하므로
+     JS에서 이중 체크 불필요. 오히려 isDetailOpen이 잘못 true가 되면
+     setPointerCapture가 호출 안 돼 native DnD가 켜지는 버그 발생 */
   trackWrap.setPointerCapture(e.pointerId);
   isDown      = true;
   isDrag      = false;
-  justDragged = false;   /* 새 press 시작 → 이전 드래그 플래그 초기화 */
+  justDragged = false;
   pressX   = e.pageX;
-  targPrev = txTarget;   /* 현재 애니메이션 목표값을 기준으로 저장 */
+  targPrev = txTarget;
 });
 
 trackWrap.addEventListener('pointermove', e => {
