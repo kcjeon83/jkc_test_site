@@ -152,8 +152,8 @@ export function Carousel({ onSelect, active }: CarouselProps) {
 
             {/* Subtle index / label below or inside */}
             <div className="absolute -bottom-16 left-0 flex flex-col opacity-0 group-hover:opacity-100 transition-opacity duration-500 delay-100">
-                <span className="text-[#d4af37] text-lg font-bold tracking-widest uppercase">{item.title}</span>
-                <span className="text-[#a0a0a0] text-xs tracking-widest uppercase">{item.subtitle}</span>
+                <span className="text-[#d4af37] text-lg font-bold tracking-widest uppercase" style={{ fontFamily: 'Pretendard, sans-serif' }}>{item.title}</span>
+                <span className="text-[#a0a0a0] text-xs tracking-widest uppercase" style={{ fontFamily: 'Pretendard, sans-serif' }}>{item.subtitle}</span>
             </div>
           </motion.div>
         ))}

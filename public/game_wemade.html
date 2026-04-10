@@ -13,13 +13,15 @@
   --ink2: rgba(240,235,224,.38);
   --ink3: rgba(240,235,224,.1);
   --gold: #c9a96e;
+  --serif:'Pretendard', sans-serif;
+  --sans: 'Pretendard', sans-serif;
   --pre:  'Pretendard', sans-serif;
 }
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 html, body {
   width:100%; height:100%;
   background:var(--bg); color:var(--ink);
-  font-family:var(--pre);
+  font-family:var(--sans);
   overflow:hidden;
   -webkit-font-smoothing:antialiased;
   cursor:default;
@@ -32,18 +34,23 @@ body::after {
   opacity:.55;
 }
 
+/* ─── CURSOR ─── */
+#cur-dot { display:none; }
+
+
 /* ─── HEADER ─── */
 #hd {
   position:fixed; top:0; left:0; right:0; z-index:200;
   display:flex; align-items:flex-end; justify-content:space-between;
   padding:30px 48px 20px;
+  border-bottom:none;
 }
 .logo {
-  font-size:22px; font-weight:600;
+  font-family:var(--pre); font-size:22px; font-weight:600;
   letter-spacing:.1em;
 }
 .logo-tag {
-  font-size:9px;
+  font-family:var(--sans); font-size:9px; font-weight:400;
   letter-spacing:.26em; color:var(--ink2); text-transform:uppercase;
   margin-left:14px;
 }
@@ -51,7 +58,7 @@ body::after {
   display:flex; gap:36px;
 }
 .hl {
-  font-size:9px;
+  font-family:var(--sans); font-size:9px; font-weight:400;
   letter-spacing:.22em; text-transform:uppercase; color:var(--ink2);
   position:relative;
 }
@@ -66,7 +73,7 @@ body::after {
 /* ─── BG WORD ─── */
 #bgw {
   position:fixed; bottom:-4vw; left:-1vw; z-index:0;
-  font-weight:600;
+  font-family:var(--pre); font-weight:600;
   font-size:26vw; color:rgba(240,235,224,.025);
   line-height:1; letter-spacing:-.02em; pointer-events:none;
   white-space:nowrap;
@@ -125,6 +132,13 @@ body.dragging .gi.lit .gi-inner.bg-img { filter:saturate(.65) brightness(.82); }
 
 /* text overlay — hidden */
 .gi-info { display:none; }
+/* index number — top RIGHT, always visible */
+.gi-num {
+  position:absolute; top:10px; right:10px; z-index:5;
+  font-family:var(--mono); font-size:9px; font-weight:400;
+  letter-spacing:.12em; color:rgba(240,235,224,.45);
+  pointer-events:none;
+}
 
 /* ─── FOOTER HUD ─── */
 #ft {
@@ -134,7 +148,7 @@ body.dragging .gi.lit .gi-inner.bg-img { filter:saturate(.65) brightness(.82); }
   border-top:1px solid var(--ink3);
 }
 .ft-hint {
-  font-size:9px;
+  font-family:var(--sans); font-size:9px; font-weight:400;
   letter-spacing:.22em; text-transform:uppercase; color:var(--ink2);
   display:flex; align-items:center; gap:12px;
 }
@@ -149,7 +163,7 @@ body.dragging .gi.lit .gi-inner.bg-img { filter:saturate(.65) brightness(.82); }
   width:0%;
 }
 .ft-count {
-  font-size:13px;
+  font-family:var(--pre); font-size:13px;
   color:var(--ink2); letter-spacing:.04em;
 }
 .ft-count em { color:var(--ink); font-style:normal; font-weight:600; }
@@ -193,37 +207,38 @@ body.dragging .gi.lit .gi-inner.bg-img { filter:saturate(.65) brightness(.82); }
 #dv.open .dv-body { opacity:1; transform:translateX(0); }
 
 .dv-eyebrow {
-  font-size:9px; font-weight:700;
+  font-family:'Pretendard', var(--sans); font-size:9px; font-weight:700;
   letter-spacing:.26em; text-transform:uppercase; color:var(--gold);
   display:flex; align-items:center; gap:14px; margin-bottom:14px;
 }
 .dv-eyebrow::before { content:''; width:30px; height:1px; background:var(--gold); }
 .dv-t {
-  font-weight:600; line-height:.92;
+  font-family:var(--pre); font-weight:600; line-height:.92;
   letter-spacing:-.02em; color:var(--ink);
   font-size:clamp(46px,5vw,80px); margin-bottom:6px;
 }
 .dv-t em { color:var(--gold); }
 .dv-sub {
+  font-family:var(--pre);
   font-size:clamp(14px,1.4vw,19px); color:var(--ink2);
   margin-bottom:28px; letter-spacing:.02em;
 }
 .dv-tags { display:flex; flex-wrap:wrap; gap:7px; margin-bottom:24px; }
 .dv-tag {
   padding:4px 12px; border:1px solid var(--ink3);
-  font-size:9px;
+  font-family:var(--sans); font-size:9px; font-weight:400;
   letter-spacing:.18em; text-transform:uppercase; color:var(--ink2);
 }
 .dv-tag.hi { border-color:var(--gold); color:var(--gold); }
 .dv-srow { display:flex; align-items:center; gap:20px; margin-bottom:24px; }
 .dv-snum {
-  font-weight:600; font-size:54px;
+  font-family:var(--pre); font-weight:600; font-size:54px;
   color:var(--ink); line-height:1;
 }
 .dv-snum span { font-size:16px; color:var(--ink2); }
 .dv-bwrap { flex:1; }
 .dv-blbl {
-  font-size:8px; letter-spacing:.18em;
+  font-family:var(--sans); font-size:8px; letter-spacing:.18em;
   text-transform:uppercase; color:var(--ink2); margin-bottom:8px;
   display:flex; justify-content:space-between;
 }
@@ -234,14 +249,14 @@ body.dragging .gi.lit .gi-inner.bg-img { filter:saturate(.65) brightness(.82); }
   width:0%; transition:width 1.1s cubic-bezier(.165,.84,.44,1) .75s;
 }
 .dv-desc {
-  font-size:14px; line-height:1.82;
+  font-family:'Pretendard', var(--serif); font-size:14px; line-height:1.82;
   color:var(--ink2); max-width:320px; margin-bottom:36px;
 }
 .dv-cta { display:flex; gap:12px; }
 .dv-back {
   position:fixed; top:24px; right:24px; z-index:600;
   display:flex; align-items:center; gap:8px;
-  font-size:12px; font-weight:600;
+  font-family:var(--pre); font-size:12px; font-weight:600;
   letter-spacing:2px; text-transform:uppercase; color:var(--ink);
   cursor:none;
   transition:color .22s;
@@ -250,7 +265,7 @@ body.dragging .gi.lit .gi-inner.bg-img { filter:saturate(.65) brightness(.82); }
 .dv-back:hover { color:#d4af37; }
 .btn-p {
   padding:13px 32px; background:var(--ink); color:var(--bg);
-  font-size:9px; font-weight:700;
+  font-family:var(--sans); font-size:9px; font-weight:700;
   letter-spacing:.22em; text-transform:uppercase;
   border:none; cursor:none; transition:background .2s;
 }
@@ -258,7 +273,7 @@ body.dragging .gi.lit .gi-inner.bg-img { filter:saturate(.65) brightness(.82); }
 .btn-w {
   padding:13px 22px; background:transparent;
   border:1px solid var(--ink3); color:var(--ink2);
-  font-size:9px;
+  font-family:var(--sans); font-size:9px; font-weight:400;
   letter-spacing:.18em; text-transform:uppercase;
   cursor:none; transition:border-color .22s, color .22s;
 }
@@ -321,6 +336,7 @@ body.dragging { cursor: grabbing !important; }
 </head>
 <body>
 
+<div id="cur-dot"></div>
 <div id="bgw">UX laboratory</div>
 
 <header id="hd">
@@ -517,52 +533,64 @@ function maxScroll() {
 }
 function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
 
-/* pointer events */
+/* pointer events — covers mouse + touch, setPointerCapture guarantees pointerup
+   even when released outside the window.
+   클릭 vs 드래그 구분: 5px 이상 이동 시 드래그로 판정, 미만이면 카드 클릭으로 처리 */
 const trackWrap = document.getElementById('track-wrap');
 trackWrap.style.touchAction = 'none';
+
+let pointerDownX = 0;
+let isPointerDown = false;
 
 trackWrap.addEventListener('pointerdown', e => {
   if (isDetailOpen) return;
   if (e.pointerType === 'mouse' && e.button !== 0) return;
   trackWrap.setPointerCapture(e.pointerId);
+  isPointerDown = true;
   isDrag = false;
-  dragSX = e.clientX;
-  // ★ 핵심 수정: txCur(화면 실제 위치) 기준으로 시작 — txTarget 기준이면
-  //   lerp가 덜 따라온 상태에서 두 번째 드래그 시 시작점이 어긋남
-  dragTX0 = txCur;
-  txTarget = txCur; // 진행 중인 lerp 즉시 정지
+  pointerDownX = e.pageX;
+  dragSX = e.pageX; dragTX0 = txTarget;
 });
 
 trackWrap.addEventListener('pointermove', e => {
   mouseX = e.clientX;
-  if (!trackWrap.hasPointerCapture(e.pointerId) || isDetailOpen) return;
-  const dx = dragSX - e.clientX; // 왼쪽으로 이동 = 양수 = 앞으로 스크롤
-  if (!isDrag && Math.abs(dx) > 5) {
+  if (!isPointerDown || isDetailOpen) return;
+  if (!isDrag && Math.abs(e.pageX - pointerDownX) > 12) {
     isDrag = true;
-    litIdx = -1;
+    // 드래그 시작 시 lit 상태 초기화 — 드래그 중 실수 클릭 방지
+    if (litIdx >= 0) { ITEMS[litIdx].el.classList.remove('lit'); litIdx = -1; }
     document.body.classList.add('dragging');
   }
-  if (isDrag) {
-    txTarget = clamp(dragTX0 + dx, 0, maxScroll());
-  }
+  if (!isDrag) return;
+  txTarget = clamp(dragTX0 - (e.pageX - dragSX), 0, maxScroll());
 });
 
-function endDrag(e) {
-  const wasDrag = isDrag;
+trackWrap.addEventListener('pointerup', e => {
   trackWrap.releasePointerCapture(e.pointerId);
-  isDrag = false;
-  document.body.classList.remove('dragging');
-  if (!wasDrag) {
-    // 클릭: 커서 아래 카드 열기 (마우스·터치 공통)
-    const card = document.elementFromPoint(e.clientX, e.clientY)?.closest('.gi');
-    if (card) {
-      const idx = ITEMS.findIndex(it => it.el === card);
-      if (idx >= 0) openDetail(idx);
+  if (isPointerDown) {
+    // lit 카드가 있으면 클릭으로 처리 (호버 상태 = 마우스)
+    if (litIdx >= 0) {
+      openDetail(litIdx);
+    } else if (!isDrag) {
+      // 터치 등 호버 없는 경우 — elementFromPoint 폴백
+      const card = document.elementFromPoint(e.clientX, e.clientY)?.closest('.gi');
+      if (card) {
+        const idx = ITEMS.findIndex(it => it.el === card);
+        if (idx >= 0) openDetail(idx);
+      }
     }
   }
-}
-trackWrap.addEventListener('pointerup',     endDrag);
-trackWrap.addEventListener('pointercancel', endDrag);
+  isPointerDown = false;
+  isDrag = false;
+  document.body.classList.remove('dragging');
+});
+
+trackWrap.addEventListener('pointercancel', e => {
+  trackWrap.releasePointerCapture(e.pointerId);
+  isPointerDown = false;
+  isDrag = false;
+  document.body.classList.remove('dragging');
+});
 
 /* ══ RENDER LOOP ══ */
 const progFill = document.getElementById('progFill');
@@ -695,10 +723,15 @@ window.addEventListener('touchstart', e => {
   }
 }, {passive:true});
 
+const cDot = document.getElementById('cur-dot');
 let litIdx = -1;
 
 window.addEventListener('mousemove', e => {
   mouseX = e.clientX;
+  cDot.style.left = e.clientX + 'px';
+  cDot.style.top  = e.clientY + 'px';
+  cDot.style.opacity = '1';
+
   if (isDrag) return; // don't update lit while dragging
 
   // Find which card the cursor is over by comparing clientX to each card's bounding rect

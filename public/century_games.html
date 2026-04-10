@@ -13,13 +13,16 @@
   --ink2:  rgba(240,232,216,.38);
   --ink3:  rgba(240,232,216,.08);
   --acc:   #45eeec;
+  --acc2:  #45eeec;
+  --serif: 'Pretendard', sans-serif;
+  --sans:  'Pretendard', sans-serif;
   --pre:   'Pretendard', sans-serif;
 }
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
 html, body {
   width:100%; height:100%;
   background:var(--bg); color:var(--ink);
-  font-family:var(--pre);
+  font-family:var(--sans);
   -webkit-font-smoothing:antialiased;
 }
 body { overflow-x:hidden; }
@@ -41,23 +44,23 @@ body::before {
   -webkit-backdrop-filter:blur(16px);
 }
 .logo {
-  font-size:22px; font-weight:600;
+  font-family:var(--pre); font-size:22px; font-weight:600;
   letter-spacing:.08em;
 }
 .logo-tag {
-  font-size:9px;
+  font-family:var(--sans); font-size:9px; font-weight:400;
   letter-spacing:.26em; color:var(--ink2); text-transform:uppercase;
   margin-left:14px;
 }
 .hd-count {
-  font-size:9px;
+  font-family:var(--sans); font-size:9px; font-weight:400;
   letter-spacing:.22em; text-transform:uppercase; color:var(--ink2);
 }
 
 /* ─── BG WORD ─── */
 #bgw {
   position:fixed; bottom:-4vw; right:-1vw; z-index:0;
-  font-weight:600;
+  font-family:var(--pre); font-weight:600;
   font-size:22vw; color:rgba(240,232,216,.018);
   line-height:1; letter-spacing:-.02em; pointer-events:none;
   white-space:nowrap; user-select:none;
@@ -71,7 +74,7 @@ body::before {
 
 /* ─── SECTION DIVIDER ─── */
 .section-label {
-  font-size:9px; letter-spacing:.28em;
+  font-family:var(--sans); font-size:9px; letter-spacing:.28em;
   text-transform:uppercase; color:var(--ink2);
   margin-bottom:24px;
   display:flex; align-items:center; gap:20px;
@@ -127,15 +130,22 @@ body::before {
 }
 .card:hover .card-info { opacity:1; transform:translateY(0); }
 
+.card-num {
+  font-family:var(--sans); font-size:8px; letter-spacing:.22em;
+  color:var(--acc2); font-weight:400;
+  margin-bottom:4px;
+}
 .card-title {
-  font-size:14px; font-weight:600;
+  font-family:var(--pre); font-size:14px; font-weight:600;
   line-height:1.2;
   color:var(--ink); margin-bottom:4px;
 }
 .card-sub {
-  font-size:9px;
+  font-family:var(--pre); font-size:9px; font-weight:400;
   color:var(--ink2); letter-spacing:.1em; text-transform:uppercase;
 }
+
+/* wide 클래스 사용 안 함 — 모든 카드 동일 크기 */
 
 /* ─── FOOTER ─── */
 #ft {
@@ -147,7 +157,7 @@ body::before {
   -webkit-backdrop-filter:blur(12px);
 }
 .ft-label {
-  font-size:9px; letter-spacing:.22em;
+  font-family:var(--sans); font-size:9px; letter-spacing:.22em;
   text-transform:uppercase; color:var(--ink2);
 }
 .ft-line {
@@ -155,6 +165,7 @@ body::before {
   margin:0 24px;
 }
 .ft-period {
+  font-family:var(--pre);
   font-size:13px; color:var(--ink2);
 }
 
@@ -195,43 +206,52 @@ body::before {
 }
 #cdv.open .cdv-body { opacity:1; transform:translateX(0); }
 .cdv-eyebrow {
-  font-size:9px; font-weight:700;
-  letter-spacing:.26em; text-transform:uppercase; color:var(--acc);
+  font-family:var(--sans); font-size:9px; font-weight:700;
+  letter-spacing:.26em; text-transform:uppercase; color:var(--acc2);
   display:flex; align-items:center; gap:14px; margin-bottom:14px;
 }
-.cdv-eyebrow::before { content:''; width:30px; height:1px; background:var(--acc); }
+.cdv-eyebrow::before { content:''; width:30px; height:1px; background:var(--acc2); }
 .cdv-t {
-  font-weight:600; line-height:.92;
+  font-family:var(--pre); font-weight:600; line-height:.92;
   letter-spacing:-.02em; color:var(--ink);
   font-size:clamp(40px,4.5vw,72px); margin-bottom:8px;
 }
-.cdv-t em { color:var(--acc); }
+.cdv-t em { color:var(--acc2); }
 .cdv-sub {
+  font-family:var(--pre);
   font-size:clamp(13px,1.3vw,18px); color:var(--ink2);
   margin-bottom:28px; letter-spacing:.02em;
 }
 .cdv-period {
-  font-size:9px; letter-spacing:.22em;
+  font-family:var(--sans); font-size:9px; letter-spacing:.22em;
   text-transform:uppercase; color:var(--ink2);
   margin-bottom:28px; display:flex; align-items:center; gap:12px;
 }
 .cdv-period::before { content:''; width:20px; height:1px; background:var(--ink3); }
 .cdv-desc {
-  font-size:14px; line-height:1.85;
+  font-family:var(--pre); font-size:14px; line-height:1.85;
   color:var(--ink2); max-width:340px; margin-bottom:0;
 }
 .cdv-back {
   position:fixed; top:24px; right:24px; z-index:600;
   display:flex; align-items:center; gap:8px;
-  font-size:12px; font-weight:600;
+  font-family:var(--sans); font-size:12px; font-weight:600;
   letter-spacing:2px; text-transform:uppercase; color:var(--ink);
-  cursor:pointer; background:none; border:none; padding:8px;
+  cursor:pointer; transition:color .22s;
+  background:none; border:none; padding:8px;
   opacity:0; pointer-events:none;
   transition:opacity .3s ease .8s, color .22s;
 }
 #cdv.open .cdv-back { opacity:1; pointer-events:all; }
-.cdv-back:hover { color:var(--acc); }
+.cdv-back:hover { color:var(--acc2); }
 
+@media(max-width:768px) {
+  #cdv { grid-template-columns:1fr; }
+  .cdv-vis { max-height:50vh; }
+  .cdv-body { padding:32px 24px; }
+}
+
+/* ─── RESPONSIVE ─── */
 @media(max-width:768px) {
   #hd { padding:20px 24px 14px; }
   #main { padding:24px 6vw 80px; }
@@ -240,9 +260,6 @@ body::before {
   .logo { font-size:17px; }
   .logo-tag { display:none; }
   #ft { padding:12px 24px; }
-  #cdv { grid-template-columns:1fr; }
-  .cdv-vis { max-height:50vh; }
-  .cdv-body { padding:32px 24px; }
 }
 </style>
 </head>
@@ -330,7 +347,7 @@ const grid = document.getElementById('grid');
 
 PROJECTS.forEach(function(p) {
   const card = document.createElement('div');
-  card.className = 'card';
+  card.className = 'card' + (p.wide ? ' wide' : '');
 
   card.innerHTML = `
     <div class="card-inner">

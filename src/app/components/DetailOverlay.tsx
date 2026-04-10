@@ -50,7 +50,7 @@ export function DetailOverlay({ item, onClose }: DetailOverlayProps) {
                 initial={{ opacity: 0, y: 50 }}
                 animate={{ opacity: 0.1, y: 0 }}
                 transition={{ duration: 1, delay: 0.8 }}
-                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] text-center text-[20vw] font-semibold text-[#d4af37] whitespace-nowrap z-0 pointer-events-none mix-blend-multiply opacity-20"
+                className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[120%] text-center text-[20vw] font-semibold text-[#d4af37] whitespace-nowrap z-0 pointer-events-none mix-blend-multiply opacity-20" style={{fontFamily:'Pretendard, sans-serif'}}
               >
                 {item.title}
               </motion.div>
@@ -69,7 +69,7 @@ export function DetailOverlay({ item, onClose }: DetailOverlayProps) {
                   <h2 className="text-[#a0a0a0] font-sans text-xs tracking-[0.2em] uppercase mb-4 font-bold">
                     Project No. {String(item.id).padStart(2, '0')}
                   </h2>
-                  <h1 className="text-[10vw] md:text-[5vw] text-[#1a1a1a] mb-6 leading-[1.1] font-semibold whitespace-[break-spaces]">
+                  <h1 className="text-[10vw] md:text-[5vw] text-[#1a1a1a] mb-6 leading-[1.1] font-semibold whitespace-[break-spaces]" style={{fontFamily:'Pretendard, sans-serif'}}>
                     {item.title}
                   </h1>
 

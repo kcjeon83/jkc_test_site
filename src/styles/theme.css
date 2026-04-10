@@ -2,6 +2,7 @@
 
 @theme {
   --font-sans: 'Pretendard', ui-sans-serif, system-ui, sans-serif;
+  --font-serif: 'Pretendard', ui-sans-serif, system-ui, sans-serif;
 }
 
 #custom-cursor.hover-state {
