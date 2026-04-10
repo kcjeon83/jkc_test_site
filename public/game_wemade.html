@@ -478,10 +478,6 @@ GAMES.forEach((g, i) => {
     inner.innerHTML = mkSVG(g, i, g.w, g.h);
   }
 
-  const num = document.createElement('div');
-  num.className = 'gi-num';
-  num.textContent = String(i+1).padStart(2,'0');
-
   const info = document.createElement('div');
   info.className = 'gi-info';
   info.innerHTML = `<div class="gi-genre">${g.g}</div>
@@ -489,7 +485,6 @@ GAMES.forEach((g, i) => {
                     <div class="gi-score">${g.score}/100</div>`;
 
   el.appendChild(inner);
-  el.appendChild(num);
   el.appendChild(info);
   track.appendChild(el);
 
