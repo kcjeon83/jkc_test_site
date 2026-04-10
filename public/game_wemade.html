@@ -92,7 +92,7 @@ body::after {
 #track {
   display:flex; align-items:center;
   gap:14px;
-  padding:0 496px;
+  padding:0 50vw;
   will-change:transform;
   transform-style:preserve-3d;
 }
@@ -545,8 +545,9 @@ let pressX   = 0;    /* pointerdown 시 pageX — 드래그 중 절대 변경 �
 let targPrev = 0;    /* pointerdown 시 txTarget */
 
 function maxScroll() {
-  let total = ITEMS.reduce((s,it) => s + it.baseW + 14, 0) - 14;
-  return Math.max(0, total - window.innerWidth + 992);
+  /* padding 0 50vw (양쪽 합 = 100vw = innerWidth)
+     maxScroll = totalContent + 100vw - viewport = totalContent */
+  return Math.max(0, ITEMS.reduce((s,it) => s + it.baseW + 14, 0) - 14);
 }
 function clamp(v, lo, hi) { return Math.max(lo, Math.min(hi, v)); }
 
@@ -657,7 +658,7 @@ function loop() {
   const heightSpread = isMobile ? 220 : 530;
 
   // #track padding — getItemCenters()는 패딩을 포함하지 않으므로 보정 필요
-  const TRACK_PAD = 496;
+  const TRACK_PAD = window.innerWidth * 0.5; /* 50vw */
 
   const brightnessAmp = Math.min(speed / 9, 1);
   const centers = getItemCenters();
