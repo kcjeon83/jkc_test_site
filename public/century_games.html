@@ -109,9 +109,13 @@ body::before {
 }
 .card-bg {
   position:absolute; inset:0;
-  background-size:contain; background-position:center; background-repeat:no-repeat;
   transition:filter .15s linear;
   filter:saturate(.65) brightness(.82);
+}
+.card-bg img {
+  width:100%; height:100%;
+  object-fit:cover;
+  display:block;
 }
 .card:hover .card-bg {
   filter:saturate(1.3) brightness(1.25);
@@ -268,7 +272,7 @@ PROJECTS.forEach(function(p) {
 
   card.innerHTML = `
     <div class="card-inner">
-      <div class="card-bg" style="background:${p.bg}"></div>
+      <div class="card-bg">${p.bg.startsWith('url(') ? `<img src="${p.bg.slice(4,-1)}" alt="${p.title}">` : `<div style="width:100%;height:100%;background:${p.bg}"></div>`}</div>
       <div class="card-overlay"></div>
       <div class="card-num">No. ${p.num}</div>
       <div class="card-info">
