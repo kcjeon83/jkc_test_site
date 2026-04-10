@@ -11,7 +11,7 @@ export default function App() {
       <CustomCursor />
       
       {/* Logo */}
-      <div className="fixed top-6 left-6 md:top-10 md:left-10 font-serif text-[22px] md:text-[28px] font-semibold italic tracking-wide z-50 pointer-events-none text-[#f0f0f0] capitalize">
+      <div className="fixed top-6 left-6 md:top-10 md:left-10 text-[22px] md:text-[28px] font-semibold tracking-wide z-50 pointer-events-none text-[#f0f0f0] capitalize" style={{fontFamily:'Pretendard, sans-serif'}}>
         jeonkicheol
       </div>
 

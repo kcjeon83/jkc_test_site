@@ -4,9 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>FUNPLE WORKS — Portfolio Archive</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,800;1,400;1,800&family=Syne:wght@400;700;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <style>
 :root {
@@ -15,8 +12,8 @@
   --ink2:  rgba(245,236,224,.38);
   --ink3:  rgba(245,236,224,.08);
   --gold:  #e8692a;
-  --serif: 'EB Garamond', serif;
-  --sans:  'Syne', sans-serif;
+  --serif: 'Pretendard', sans-serif;
+  --sans:  'Pretendard', sans-serif;
   --pre:   'Pretendard', sans-serif;
 }
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
@@ -43,7 +40,7 @@ body::after {
   padding:30px 48px 20px;
 }
 .logo {
-  font-family:var(--serif); font-size:22px; font-weight:800;
+  font-family:var(--pre); font-size:22px; font-weight:600;
   letter-spacing:.1em;
 }
 .logo-tag {
@@ -55,7 +52,7 @@ body::after {
 /* ─── BG WORD ─── */
 #bgw {
   position:fixed; bottom:-4vw; left:-1vw; z-index:0;
-  font-family:var(--serif); font-style:italic; font-weight:800;
+  font-family:var(--pre); font-weight:600;
   font-size:26vw; color:rgba(232,105,42,.03);
   line-height:1; letter-spacing:-.02em; pointer-events:none;
   white-space:nowrap; user-select:none;
@@ -142,8 +139,8 @@ body::after {
 }
 .gi:hover .gi-info { opacity:1; transform:translateY(0); }
 .gi-title {
-  font-family:var(--serif); font-size:13px; font-weight:800;
-  font-style:italic; color:var(--ink); line-height:1.2; margin-bottom:3px;
+  font-family:var(--pre); font-size:13px; font-weight:600;
+  color:var(--ink); line-height:1.2; margin-bottom:3px;
 }
 .gi-sub {
   font-family:var(--pre); font-size:8px; letter-spacing:.12em;
@@ -173,10 +170,10 @@ body::after {
   width:0%;
 }
 .ft-count {
-  font-family:var(--serif); font-style:italic; font-size:13px;
+  font-family:var(--pre); font-size:13px;
   color:var(--ink2); letter-spacing:.04em;
 }
-.ft-count em { color:var(--ink); font-style:normal; font-weight:800; }
+.ft-count em { color:var(--ink); font-weight:600; }
 
 @media(max-width:768px) {
   #hd { padding:14px 18px 10px; }

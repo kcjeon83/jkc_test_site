@@ -4,9 +4,6 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CENTURY GAMES — Portfolio Archive</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,800;1,400;1,800&family=Syne:wght@400;700;800&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/orioncactus/pretendard@v1.3.9/dist/web/static/pretendard.min.css">
 <style>
 /* ─── RESET & BASE ─── */
@@ -17,8 +14,8 @@
   --ink3:  rgba(240,232,216,.08);
   --acc:   #45eeec;
   --acc2:  #45eeec;
-  --serif: 'EB Garamond', serif;
-  --sans:  'Syne', sans-serif;
+  --serif: 'Pretendard', sans-serif;
+  --sans:  'Pretendard', sans-serif;
   --pre:   'Pretendard', sans-serif;
 }
 *, *::before, *::after { margin:0; padding:0; box-sizing:border-box; }
@@ -47,7 +44,7 @@ body::before {
   -webkit-backdrop-filter:blur(16px);
 }
 .logo {
-  font-family:var(--serif); font-size:22px; font-weight:800;
+  font-family:var(--pre); font-size:22px; font-weight:600;
   letter-spacing:.08em;
 }
 .logo-tag {
@@ -63,7 +60,7 @@ body::before {
 /* ─── BG WORD ─── */
 #bgw {
   position:fixed; bottom:-4vw; right:-1vw; z-index:0;
-  font-family:var(--serif); font-style:italic; font-weight:800;
+  font-family:var(--pre); font-weight:600;
   font-size:22vw; color:rgba(240,232,216,.018);
   line-height:1; letter-spacing:-.02em; pointer-events:none;
   white-space:nowrap; user-select:none;
@@ -139,8 +136,8 @@ body::before {
   margin-bottom:4px;
 }
 .card-title {
-  font-family:var(--serif); font-size:14px; font-weight:800;
-  font-style:italic; line-height:1.2;
+  font-family:var(--pre); font-size:14px; font-weight:600;
+  line-height:1.2;
   color:var(--ink); margin-bottom:4px;
 }
 .card-sub {
@@ -168,7 +165,7 @@ body::before {
   margin:0 24px;
 }
 .ft-period {
-  font-family:var(--serif); font-style:italic;
+  font-family:var(--pre);
   font-size:13px; color:var(--ink2);
 }
 
@@ -215,13 +212,13 @@ body::before {
 }
 .cdv-eyebrow::before { content:''; width:30px; height:1px; background:var(--acc2); }
 .cdv-t {
-  font-family:var(--serif); font-weight:800; line-height:.92;
+  font-family:var(--pre); font-weight:600; line-height:.92;
   letter-spacing:-.02em; color:var(--ink);
   font-size:clamp(40px,4.5vw,72px); margin-bottom:8px;
 }
-.cdv-t em { font-style:italic; color:var(--acc2); }
+.cdv-t em { color:var(--acc2); }
 .cdv-sub {
-  font-family:'Pretendard', var(--sans); font-style:normal;
+  font-family:var(--pre);
   font-size:clamp(13px,1.3vw,18px); color:var(--ink2);
   margin-bottom:28px; letter-spacing:.02em;
 }
@@ -232,7 +229,7 @@ body::before {
 }
 .cdv-period::before { content:''; width:20px; height:1px; background:var(--ink3); }
 .cdv-desc {
-  font-family:'Pretendard', var(--sans); font-size:14px; line-height:1.85;
+  font-family:var(--pre); font-size:14px; line-height:1.85;
   color:var(--ink2); max-width:340px; margin-bottom:0;
 }
 .cdv-back {
