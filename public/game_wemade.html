@@ -552,8 +552,8 @@ trackWrap.addEventListener('pointermove', e => {
 trackWrap.addEventListener('pointerup', e => {
   trackWrap.releasePointerCapture(e.pointerId);
   if (isPointerDown) {
-    // lit 카드가 있으면 클릭으로 처리 (호버 상태 = 마우스)
-    if (litIdx >= 0) {
+    // lit 카드가 있으면 클릭으로 처리 (호버 상태 = 마우스, 드래그 아닐 때만)
+    if (!isDrag && litIdx >= 0) {
       openDetail(litIdx);
     } else if (!isDrag) {
       // 터치 등 호버 없는 경우 — elementFromPoint 폴백
@@ -707,15 +707,10 @@ window.addEventListener('touchstart', e => {
   }
 }, {passive:true});
 
-const cDot = document.getElementById('cur-dot');
 let litIdx = -1;
 
 window.addEventListener('mousemove', e => {
   mouseX = e.clientX;
-  cDot.style.left = e.clientX + 'px';
-  cDot.style.top  = e.clientY + 'px';
-  cDot.style.opacity = '1';
-
   if (isDrag) return; // don't update lit while dragging
 
   // Find which card the cursor is over by comparing clientX to each card's bounding rect
