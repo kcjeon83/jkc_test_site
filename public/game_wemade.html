@@ -549,7 +549,8 @@ trackWrap.addEventListener('pointerdown', e => {
   isPointerDown = true;
   isDrag = false;
   pointerDownX = e.pageX;
-  dragSX = e.pageX; dragTX0 = txTarget;
+  txTarget = txCur;          // lerp 목표를 현재 시각 위치로 리셋
+  dragSX = e.pageX; dragTX0 = txCur;
 });
 
 trackWrap.addEventListener('pointermove', e => {
