@@ -173,9 +173,8 @@ body::before {
 #cdv {
   position:fixed; inset:0; z-index:500;
   background:var(--bg);
-  display:grid; grid-template-columns:70% 30%;
-  grid-template-rows:100vh;
-  overflow:hidden;
+  display:flex;
+  overflow-y:auto; overflow-x:hidden;
   clip-path:inset(50% 50% 50% 50%);
   transition:clip-path .85s cubic-bezier(.77,0,.175,1);
   pointer-events:none;
@@ -185,22 +184,18 @@ body::before {
   pointer-events:all;
 }
 .cdv-vis {
-  overflow-y:auto; overflow-x:hidden;
+  flex:0 0 70%;
   background:#000;
-  scrollbar-width:none;
-  height:100vh;
+  overflow:hidden;
 }
-.cdv-vis::-webkit-scrollbar { display:none; }
 .cdv-vis img {
   width:100%; display:block; margin:0; padding:0;
   line-height:0;
 }
-.cdv-vis::after {
-  content:''; position:sticky; bottom:0; left:0; right:0; height:80px;
-  background:linear-gradient(to top, var(--bg), transparent);
-  display:block; pointer-events:none;
-}
 .cdv-body {
+  flex:0 0 30%;
+  position:sticky; top:0;
+  height:100vh;
   display:flex; flex-direction:column; justify-content:center;
   padding:80px 60px 80px 4px;
   opacity:0; transform:translateX(22px);
@@ -249,9 +244,9 @@ body::before {
 .cdv-back:hover { color:var(--acc2); }
 
 @media(max-width:768px) {
-  #cdv { grid-template-columns:1fr; }
-  .cdv-vis { max-height:50vh; }
-  .cdv-body { padding:32px 24px; }
+  #cdv { flex-direction:column; }
+  .cdv-vis { flex:none; width:100%; }
+  .cdv-body { flex:none; width:100%; position:relative; height:auto; padding:32px 24px; }
 }
 
 /* ─── RESPONSIVE ─── */
