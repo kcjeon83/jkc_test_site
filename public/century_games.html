@@ -372,12 +372,14 @@ const cdvVis  = document.getElementById('cdvVis');
 
 function openDetail() {
   cdv.classList.add('open');
-  cdvVis.scrollTop = 0;
+  cdv.scrollTop = 0;
+  document.body.style.overflow = 'hidden';
   window.parent.postMessage('detail:open', '*');
 }
 
 function closeDetail() {
   cdv.classList.remove('open');
+  document.body.style.overflow = '';
   window.parent.postMessage('detail:close', '*');
 }
 
